@@ -66,6 +66,10 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     return PlayerModel.query.all()
 
   @staticmethod
+  def get_player_by_email(value):
+    return PlayerModel.query.filter_by(email=value).first()
+
+  @staticmethod
   def get_one_player(id):
     return PlayerModel.query.get(id)
 
