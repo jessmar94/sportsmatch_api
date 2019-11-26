@@ -23,10 +23,6 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   dob = db.Column(db.Date, nullable=False)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
-  organizer = db.relationship("GameModel", primaryjoin="Game.organsier_id == Player.id", backref="players", lazy=True)
-  opponent = db.relationship("GameModel", primaryjoin="Game.opponent_id == Player.id", backref="players", lazy=True)
-  winner = db.relationship("ResultModel", primaryjoin="Result.winner_id == Player.id", backref="players", lazy=True)
-  loser = db.relationship("ResultModel", primaryjoin="Result.loser_id == Player.id", backref="players", lazy=True)
 
   # class constructor
   def __init__(self, data): # class constructor used to set the class attributes
@@ -68,6 +64,10 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   @staticmethod
   def get_all_players():
     return PlayerModel.query.all()
+
+  @staticmethod
+  def get_player_by_email(value):
+    return PlayerModel.query.filter_by(email=value).first()
 
   @staticmethod
   def get_one_player(id):
