@@ -15,6 +15,7 @@ marshmallow = "*"
 flask-bcrypt = "*"
 pyjwt = "*"
 python-dotenv = "*"
+sqlalchemy-utils = "*"
 
 [requires]
 python_version = "3.7"

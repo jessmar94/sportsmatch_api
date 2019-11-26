@@ -2,6 +2,8 @@ from marshmallow import fields, Schema
 import datetime
 from . import db # import db instance from models/__init__.py
 from ..app import bcrypt
+from .GameModel import GameSchema
+from .ResultModel import ResultSchema
 
 class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   """
@@ -21,6 +23,10 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   dob = db.Column(db.Date, nullable=False)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
+  organizer = db.relationship("GameModel", primaryjoin="Game.organsier_id == Player.id", backref="players", lazy=True)
+  opponent = db.relationship("GameModel", primaryjoin="Game.opponent_id == Player.id", backref="players", lazy=True)
+  winner = db.relationship("ResultModel", primaryjoin="Result.winner_id == Player.id", backref="players", lazy=True)
+  loser = db.relationship("ResultModel", primaryjoin="Result.loser_id == Player.id", backref="players", lazy=True)
 
   # class constructor
   def __init__(self, data): # class constructor used to set the class attributes
@@ -82,6 +88,7 @@ class PlayerSchema(Schema):
   password = fields.Str(required=True)
   ability = fields.Str(required=True)
   gender = fields.Str(required=True)
-  dob = fields.Str(required=True)
+  dob = fields.Date(required=True)
   created_at = fields.DateTime(dump_only=True)
   modified_at = fields.DateTime(dump_only=True)
+  games = fields.Nested(GameSchema, many=True)
