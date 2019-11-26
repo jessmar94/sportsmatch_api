@@ -51,11 +51,7 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
     db.session.commit()
 
   @staticmethod
-  def get_all_games():
-    return GameModel.query.all()
-
-  @staticmethod
-  def get_players_games(id):
+  def get_all_games(id):
     return GameModel.query.filter(or_(GameModel.organiser_id==id, GameModel.opponent_id==id))
 
   @staticmethod

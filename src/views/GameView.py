@@ -34,7 +34,7 @@ def get_all():
     Get All Games
     """
     # game = GameModel.get_all_games()
-    game = GameModel.get_players_games(g.player.get('id'))
+    game = GameModel.get_all_games(g.player.get('id'))
     data = game_schema.dump(game, many=True)
     return custom_response(data, 200)
 
@@ -59,8 +59,11 @@ def confirm_game(game_id):
     """
     req_data = request.get_json()
     game = GameModel.get_one_game(game_id)
+    data = game_schema.dump(game)
     if not game:
         return custom_response({'error': 'game not found'}, 404)
+    if data.get('opponent_id') != g.player.get('id'):
+        return custom_response({'error': 'permission denied'}, 400)
     data = game_schema.load(req_data, partial=True)
     game.update(data)
     data = game_schema.dump(game)
@@ -74,8 +77,11 @@ def edit_game(game_id):
     """
     req_data = request.get_json()
     game = GameModel.get_one_game(game_id)
+    data = game_schema.dump(game)
     if not game:
         return custom_response({'error': 'game not found'}, 404)
+    if data.get('organiser_id') != g.player.get('id'):
+        return custom_response({'error': 'permission denied'}, 400)
     data = game_schema.load(req_data, partial=True)
     game.update(data)
     data = game_schema.dump(game)
