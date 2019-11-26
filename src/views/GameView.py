@@ -86,3 +86,15 @@ def edit_game(game_id):
     game.update(data)
     data = game_schema.dump(game)
     return custom_response(data, 201)
+
+@game_api.route('/<int:game_id>', methods=['DELETE'])
+@Auth.auth_required
+def delete_game(game_id):
+    game = GameModel.get_one_game(game_id)
+    data = game_schema.dump(game)
+    if not game:
+        return custom_response({'error': 'game not found'}, 404)
+    if data.get('organiser_id') != g.player.get('id'):
+        return custom_response({'error': 'permission denied'}, 400)
+    game.delete()
+    return custom_response({'message': 'deleted'}, 204)
