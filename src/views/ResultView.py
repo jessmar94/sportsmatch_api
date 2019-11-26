@@ -1,14 +1,17 @@
-from flask import request, json, Response, Blueprint
+from flask import g, request, json, Response, Blueprint
 from ..models.ResultModel import ResultModel, ResultSchema
 from ..models.GameModel import GameModel, GameSchema
+from ..shared.Authentication import Auth
 
 result_api = Blueprint('results', __name__)
 result_schema = ResultSchema()
 
 @result_api.route('/', methods=['GET'])
+@Auth.auth_required
 def get_all():
-    host = GameModel.get_game_by_org_id(1)
-    guest = GameModel.get_game_by_opp_id(1)
+    current_user_id = g.player.get('id')
+    host = GameModel.get_game_by_org_id(current_user_id)
+    guest = GameModel.get_game_by_opp_id(current_user_id)
     games = [*host, *guest]
     results = []
     for game in games:
