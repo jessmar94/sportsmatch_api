@@ -2,6 +2,7 @@ import datetime
 from . import db # import db instance from models/__init__.py
 from marshmallow import fields, Schema
 from .ResultModel import ResultSchema
+from sqlalchemy import or_
 
 class GameModel(db.Model): # GameModel class inherits from db.Model
   """
@@ -52,6 +53,10 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
   @staticmethod
   def get_all_games():
     return GameModel.query.all()
+
+  @staticmethod
+  def get_players_games(id):
+    return GameModel.query.filter(or_(GameModel.organiser_id==id, GameModel.opponent_id==id))
 
   @staticmethod
   def get_one_game(id):

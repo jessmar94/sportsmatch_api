@@ -1,5 +1,5 @@
 from flask import request, g, Blueprint, json, Response
-# from ..shared.Authentication import Auth
+from ..shared.Authentication import Auth
 from ..models.GameModel import GameModel, GameSchema
 
 game_api = Blueprint('game_api', __name__)
@@ -16,6 +16,7 @@ def custom_response(res, status_code):
   )
 
 @game_api.route('/<int:game_id>', methods=['GET'])
+@Auth.auth_required
 def get_one(game_id):
   """
   Get A Game
@@ -27,15 +28,18 @@ def get_one(game_id):
   return custom_response(data, 200)
 
 @game_api.route('/', methods=['GET'])
+@Auth.auth_required
 def get_all():
     """
     Get All Games
     """
-    game = GameModel.get_all_games()
+    # game = GameModel.get_all_games()
+    game = GameModel.get_players_games(g.player.get('id'))
     data = game_schema.dump(game, many=True)
     return custom_response(data, 200)
 
 @game_api.route('/', methods=['POST'])
+@Auth.auth_required
 def create():
   """
   Create Game Function
@@ -48,6 +52,7 @@ def create():
   return custom_response(data, 201)
 
 @game_api.route('/<int:game_id>', methods=['PATCH'])
+@Auth.auth_required
 def confirm_game(game_id):
     """
     Confirm a Game
@@ -62,6 +67,7 @@ def confirm_game(game_id):
     return custom_response(data, 201)
 
 @game_api.route('/<int:game_id>/edit', methods=['PATCH'])
+@Auth.auth_required
 def edit_game(game_id):
     """
     Edit a Game
