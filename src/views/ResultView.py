@@ -9,9 +9,13 @@ result_schema = ResultSchema()
 def get_all():
     host = GameModel.get_game_by_org_id(1)
     guest = GameModel.get_game_by_opp_id(1)
-    results = [*host, *guest]
-    data = result_schema.dump(results, many=True)
-    return custom_response(data, 200)
+    games = [*host, *guest]
+    results = []
+    for game in games:
+        result = ResultModel.get_result_by_game(game.id)
+        formatted_result = result_schema.dump(result, many=True)
+        results.append(formatted_result)
+    return custom_response(results, 200)
 
 @result_api.route('/', methods=['POST'])
 def create():
