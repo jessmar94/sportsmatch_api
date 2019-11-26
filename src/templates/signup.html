@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>sportsmatch</title>
+  </head>
+  <body>
+    {% extends "template.html" %}
+    {% block content %}
+    
+    <h1> Create an account </h1>
+    <form action="/new" method="POST">
+      <p><input type="text" name="first_name" placeholder="first name"></p>
+      <p><input type="text" name="last_name" placeholder="last name"></p>
+      <p><input type="text" name="email" placeholder="email"></p>
+      <p><input type="text" name="password" placeholder="password"></p>
+      <p> Gender:<br>
+        <input type="radio" name="gender" value="male" checked> Male<br>
+        <input type="radio" name="gender" value="female"> Female<br>
+        <input type="radio" name="gender" value="other"> Other
+      </p>
+      <p> Sporting ability:<br>
+        <input type="radio" name="ability" value="Beginner">Beginner<br>
+        <input type="radio" name="ability" value="Intermediate">Intermediate<br>
+        <input type="radio" name="ability" value="Advanced">Advanced<br>
+      </p>
+      <p>Date of birth:<br>
+      <input type="date" name="dob" placeholder="date of birth"></p>
+      <input type="submit">
+    </form>
+    <form>
+      <input type="button" value="Go back" onclick="history.back()">
+    </form>
+    {% endblock %}
+  </body>
+</html>

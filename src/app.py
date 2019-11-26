@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 
 from .config import app_config
 from .models import db, bcrypt
@@ -28,6 +28,6 @@ def create_app(env_name):
     """
     example endpoint
     """
-    return 'Congratulations! Your first endpoint is working'
+    return "Initial root route"
 
   return app

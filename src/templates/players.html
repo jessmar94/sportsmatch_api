@@ -1,0 +1,13 @@
+<html>
+    <head>
+        <title>{{ title }} - </title>
+    </head>
+    <body>
+        <h1>Hello, {{ user }}!</h1>
+
+        {% for player in players %}
+        <div><p> {{ player.username }} </p></div>
+        {% endfor %}
+
+    </body>
+</html>
