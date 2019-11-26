@@ -46,11 +46,11 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
   def delete(self):
     db.session.delete(self)
     db.session.commit()
-  
+
   @staticmethod
   def get_all_games():
     return GameModel.query.all()
-  
+
   @staticmethod
   def get_one_game(id):
     return GameModel.query.get(id)
