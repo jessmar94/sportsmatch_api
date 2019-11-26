@@ -23,7 +23,7 @@ def create_app(env_name):
 
   db.init_app(app)
 
-  app.register_blueprint(result_blueprint, url_prefix='/api/v1/results')
+  app.register_blueprint(result_blueprint, url_prefix='/api/v1/players/1/results')
   app.register_blueprint(player_blueprint, url_prefix='/api/v1/players')
 
 

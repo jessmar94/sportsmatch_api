@@ -7,8 +7,9 @@ result_schema = ResultSchema()
 
 @result_api.route('/', methods=['GET'])
 def get_all():
-    # results = ResultModel.get_all_results()
-    results = GameModel.get_game_by_org_id(1)
+    host = GameModel.get_game_by_org_id(1)
+    guest = GameModel.get_game_by_opp_id(1)
+    results = [*host, *guest]
     data = result_schema.dump(results, many=True)
     return custom_response(data, 200)
 
