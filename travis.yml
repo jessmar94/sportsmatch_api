@@ -7,20 +7,14 @@ language: python
 # Set python version
 python: 3.7.5
 
-before_install:
-  - python --version
-  - pip install -r requirements.txt
-  - pip install -U pip # to work with most updated pip
-  - pip install -U pytest
-  - pip install codecov
-
-# Install package and test dependencies 
 install:
-  - pip install ".[test]"
-
+  - pip install pipenv
+  - pip install pipenv pytest
+  - pipenv install
+  
 # Run tests
-script:
-  - pytest
+# script:
+#   - pytest
 
 # Submit coverage
 after_success:
