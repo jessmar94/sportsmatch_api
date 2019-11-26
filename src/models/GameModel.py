@@ -19,7 +19,7 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
   game_time = db.Column(db.Time, nullable=False)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
-  game = db.relationship("ResultModel", primaryjoin="Result.game_id == Game.id", backref="games", lazy=True)
+  game = db.relationship("ResultModel", primaryjoin="ResultModel.game_id == GameModel.id", backref="games", lazy=True)
 
   # class constructor
   def __init__(self, data): # class constructor used to set the class attributes
