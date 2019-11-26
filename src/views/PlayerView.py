@@ -1,6 +1,6 @@
 # request contains info from user including headers, body and other info
 # json to serialize json output
-from flask import request, json, Response, Blueprint
+from flask import request, json, Response, Blueprint, g
 from ..models.PlayerModel import PlayerModel, PlayerSchema
 # Auth used to generate user's token and to decode user's token
 from ..shared.Authentication import Auth
@@ -13,7 +13,9 @@ def create():
   """
   Create User Function
   """
+  # request similar to http
   req_data = request.get_json()
+  # load in format of playerschema
   data = player_schema.load(req_data)
 
   # if error:
@@ -28,7 +30,7 @@ def create():
   player = PlayerModel(data)
   player.save()
 
-  ser_data = player_schema.dump(player).data
+  ser_data = player_schema.dump(player)
 
   token = Auth.generate_token(ser_data.get('id'))
 
@@ -44,7 +46,7 @@ def get_a_player(player_id):
   if not player:
     return custom_response({'error': 'player not found'}, 404)
   
-  ser_player = player_schema.dump(player).data
+  ser_player = player_schema.dump(player)
   return custom_response(ser_player, 200)
 
 @player_api.route('/me', methods=['PUT'])
@@ -60,7 +62,7 @@ def update():
 
   player = PlayerModel.get_one_player(g.player.get('id'))
   player.update(data)
-  ser_player = player_schema.dump(player).data
+  ser_player = player_schema.dump(player)
   return custom_response(ser_player, 200)
 
 @player_api.route('/me', methods=['DELETE'])
@@ -80,14 +82,14 @@ def get_me():
   Get me
   """
   player = PlayerModel.get_one_player(g.player.get('id'))
-  ser_player = player_schema.dump(player).data
+  ser_player = player_schema.dump(player)
   return custom_response(ser_player, 200)
 
 @player_api.route('/', methods=['GET'])
 @Auth.auth_required
 def get_all():
   players = PlayerModel.get_all_players()
-  ser_players = player_schema.dump(players, many=True).data
+  ser_players = player_schema.dump(players, many=True)
   return custom_response(ser_players, 200)
 
 @player_api.route('/login', methods=['POST'])
@@ -110,7 +112,7 @@ def login():
   if not player.check_hash(data.get('password')):
     return custom_response({'error': 'invalid credentials'}, 400)
   
-  ser_data = player_schema.dump(player).data
+  ser_data = player_schema.dump(player)
   
   token = Auth.generate_token(ser_data.get('id'))
 

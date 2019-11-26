@@ -23,10 +23,6 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   dob = db.Column(db.Date, nullable=False)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
-  organiser = db.relationship("GameModel", primaryjoin="GameModel.organiser_id == PlayerModel.id", backref="players", lazy=True)
-  opponent = db.relationship("GameModel", primaryjoin="GameModel.opponent_id == PlayerModel.id", backref="players", lazy=True)
-  winner = db.relationship("ResultModel", primaryjoin="ResultModel.winner_id == PlayerModel.id", backref="players", lazy=True)
-  loser = db.relationship("ResultModel", primaryjoin="ResultModel.loser_id == PlayerModel.id", backref="players", lazy=True)
 
   # class constructor
   def __init__(self, data): # class constructor used to set the class attributes

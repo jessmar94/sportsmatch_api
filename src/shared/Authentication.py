@@ -80,7 +80,7 @@ class Auth():
           response=json.dumps({'error': 'player does not exist, invalid token'}),
           status=400
         )
-        # if token is valid, save the oayload dara to g (g is a global variable in flask)
+        # if token is valid, save the payload dara to g (g is a global variable in flask)
       g.player = {'id': player_id}
       return func(*args, **kwargs)
     return decorated_auth
