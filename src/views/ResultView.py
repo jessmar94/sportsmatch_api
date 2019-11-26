@@ -21,7 +21,8 @@ def get_all():
     return custom_response(results, 200)
 
 @result_api.route('/', methods=['POST'])
-def create():
+@Auth.auth_required
+def create():  
       """
       Create Result Function
       """
@@ -35,18 +36,25 @@ def create():
       return custom_response(data, 201)
 
 @result_api.route('/<int:result_id>/edit', methods=['PATCH'])
+@Auth.auth_required
 def edit_result(result_id):
     """
     Edit a Result
     """
+    current_user_id = g.player.get('id')
     req_data = request.get_json()
     result = ResultModel.get_one_result(result_id)
+    game = GameModel.get_one_game(result.id)
+
     if not result:
-        return custom_response({'error': 'result not found'}, 404)
-    data = result_schema.load(req_data, partial=True)
-    result.update(data)
-    data = result_schema.dump(result)
-    return custom_response(data, 201)
+      return custom_response({'error': 'result not found'}, 404)
+    if game.organiser_id == current_user_id:
+      data = result_schema.load(req_data, partial=True)
+      result.update(data)
+      data = result_schema.dump(result)
+      return custom_response(data, 201)
+    else:
+      return custom_response({'error': 'only organiser can edit the result'}, 404)
 
 def custom_response(res, status_code):
     """
