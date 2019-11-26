@@ -35,8 +35,6 @@ def get_all():
     data = game_schema.dump(game, many=True)
     return custom_response(data, 200)
 
-
-
 @game_api.route('/', methods=['POST'])
 def create():
   """
@@ -56,9 +54,23 @@ def confirm_game(game_id):
     """
     req_data = request.get_json()
     game = GameModel.get_one_game(game_id)
-    data = game_schema.dump(game)
+    if not game:
+        return custom_response({'error': 'game not found'}, 404)
     data = game_schema.load(req_data, partial=True)
-    # game = GameModel(data)
+    game.update(data)
+    data = game_schema.dump(game)
+    return custom_response(data, 201)
+
+@game_api.route('/<int:game_id>/edit', methods=['PATCH'])
+def edit_game(game_id):
+    """
+    Edit a Game
+    """
+    req_data = request.get_json()
+    game = GameModel.get_one_game(game_id)
+    if not game:
+        return custom_response({'error': 'game not found'}, 404)
+    data = game_schema.load(req_data, partial=True)
     game.update(data)
     data = game_schema.dump(game)
     return custom_response(data, 201)

@@ -5,12 +5,6 @@ from ..app import bcrypt
 from .GameModel import GameSchema
 from .ResultModel import ResultSchema
 
-from sqlalchemy import Table, Column, Integer, ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
-
 class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   """
   Player Model
