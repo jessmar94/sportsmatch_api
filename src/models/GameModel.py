@@ -19,7 +19,6 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
   game_time = db.Column(db.Time, nullable=False)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
-  game = db.relationship("ResultModel", primaryjoin="Result.game_id == Game.id", backref="games", lazy=True)
 
   # class constructor
   def __init__(self, data): # class constructor used to set the class attributes
@@ -46,11 +45,11 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
   def delete(self):
     db.session.delete(self)
     db.session.commit()
-  
+
   @staticmethod
   def get_all_games():
     return GameModel.query.all()
-  
+
   @staticmethod
   def get_one_game(id):
     return GameModel.query.get(id)

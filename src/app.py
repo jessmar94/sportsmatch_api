@@ -4,6 +4,9 @@ from .config import app_config
 from .models import db, bcrypt
 from .models import PlayerModel
 from .models import GameModel
+from .models import ResultModel 
+
+from .views.ResultView import result_api as result_blueprint
 
 def create_app(env_name):
   """
@@ -19,6 +22,8 @@ def create_app(env_name):
   bcrypt.init_app(app)
 
   db.init_app(app)
+
+  app.register_blueprint(result_blueprint, url_prefix='/api/v1/results')
 
   @app.route('/', methods=['GET'])
   def index():
