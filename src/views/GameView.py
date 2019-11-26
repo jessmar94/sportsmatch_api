@@ -18,7 +18,7 @@ def custom_response(res, status_code):
 @game_api.route('/<int:game_id>', methods=['GET'])
 def get_one(game_id):
   """
-  Get A Blogpost
+  Get A Game
   """
   game = GameModel.get_one_game(game_id)
   if not game:
@@ -28,16 +28,19 @@ def get_one(game_id):
 
 @game_api.route('/', methods=['GET'])
 def get_all():
-  game = GameModel.get_all_games()
-  data = game_schema.dump(game, many=True)
-  return custom_response(data, 200)
+    """
+    Get All Games
+    """
+    game = GameModel.get_all_games()
+    data = game_schema.dump(game, many=True)
+    return custom_response(data, 200)
 
 
 
 @game_api.route('/', methods=['POST'])
 def create():
   """
-  Create Blogpost Function
+  Create Game Function
   """
   req_data = request.get_json()
   data = game_schema.load(req_data)
@@ -45,3 +48,17 @@ def create():
   game.save()
   data = game_schema.dump(game)
   return custom_response(data, 201)
+
+@game_api.route('/<int:game_id>', methods=['PATCH'])
+def confirm_game(game_id):
+    """
+    Confirm a Game
+    """
+    req_data = request.get_json()
+    game = GameModel.get_one_game(game_id)
+    data = game_schema.dump(game)
+    data = game_schema.load(req_data, partial=True)
+    # game = GameModel(data)
+    game.update(data)
+    data = game_schema.dump(game)
+    return custom_response(data, 201)

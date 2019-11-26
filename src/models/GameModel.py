@@ -14,7 +14,7 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
   id = db.Column(db.Integer, primary_key=True)
   organiser_id = db.Column(db.Integer, db.ForeignKey('players.id'), nullable=False)
   opponent_id = db.Column(db.Integer, db.ForeignKey('players.id'), nullable=False)
-  confirmed = db.Column(db.String, default="False", nullable=False)
+  confirmed = db.Column(db.String, server_default="False", nullable=False)
   game_date = db.Column(db.Date, nullable=False)
   game_time = db.Column(db.Time, nullable=False)
   created_at = db.Column(db.DateTime)
