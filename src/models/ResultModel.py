@@ -2,6 +2,7 @@ import datetime
 from . import db # import db instance from models/__init__.py
 from marshmallow import fields, Schema
 
+
 class ResultModel(db.Model): # ResultModel class inherits from db.Model
   """
   Result Model
@@ -42,11 +43,11 @@ class ResultModel(db.Model): # ResultModel class inherits from db.Model
   def delete(self):
     db.session.delete(self)
     db.session.commit()
-  
+
   @staticmethod
   def get_all_results():
     return ResultModel.query.all()
-  
+
   @staticmethod
   def get_one_result(id):
     return ResultModel.query.get(id)

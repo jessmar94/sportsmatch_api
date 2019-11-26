@@ -5,6 +5,8 @@ from .models import db, bcrypt
 from .models import PlayerModel
 from .models import GameModel
 
+from .views.GameView import game_api as game_blueprint # add this line
+
 def create_app(env_name):
   """
   Create app
@@ -19,6 +21,8 @@ def create_app(env_name):
   bcrypt.init_app(app)
 
   db.init_app(app)
+
+  app.register_blueprint(game_blueprint, url_prefix='/api/v1/games')
 
   @app.route('/', methods=['GET'])
   def index():
