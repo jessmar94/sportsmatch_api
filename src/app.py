@@ -3,6 +3,7 @@ from flask import Flask
 from .config import app_config
 from .models import db, bcrypt
 from .models import PlayerModel
+from .models import GameModel
 
 def create_app(env_name):
   """
