@@ -31,6 +31,20 @@ def create():
       result.save()
       return custom_response(data, 201)
 
+@result_api.route('/<int:result_id>/edit', methods=['PATCH'])
+def edit_result(result_id):
+    """
+    Edit a Result
+    """
+    req_data = request.get_json()
+    result = ResultModel.get_one_result(result_id)
+    if not result:
+        return custom_response({'error': 'result not found'}, 404)
+    data = result_schema.load(req_data, partial=True)
+    result.update(data)
+    data = result_schema.dump(result)
+    return custom_response(data, 201)
+
 def custom_response(res, status_code):
     """
     Custom Response Function
