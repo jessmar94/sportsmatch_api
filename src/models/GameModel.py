@@ -54,6 +54,14 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
   def get_one_game(id):
     return GameModel.query.get(id)
 
+  @staticmethod
+  def get_game_by_org_id(user_id):
+    return GameModel.query.filter_by(organiser_id=user_id)
+
+  @staticmethod
+  def get_game_by_opp_id(user_id):
+    return GameModel.query.filter_by(opponent_id=user_id)
+
   def __repr__(self):
     return '<id {}>'.format(self.id)
 

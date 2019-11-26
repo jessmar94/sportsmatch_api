@@ -20,13 +20,13 @@ def create():
 
   # if error:
   #   return custom_response(error, 400)
-  
+
   # check if user already exist in the db
   player_in_db = PlayerModel.get_player_by_email(data.get('email'))
   if player_in_db:
     message = {'error': 'Player already exist, please supply another email address'}
     return custom_response(message, 400)
-  
+
   player = PlayerModel(data)
   player.save()
 
@@ -35,7 +35,7 @@ def create():
   token = Auth.generate_token(ser_data.get('id'))
 
   return custom_response({'jwt_token': token}, 201)
-  
+
 @player_api.route('/<int:player_id>', methods=['GET'])
 @Auth.auth_required
 def get_a_player(player_id):
@@ -45,7 +45,7 @@ def get_a_player(player_id):
   player = PlayerModel.get_one_player(player_id)
   if not player:
     return custom_response({'error': 'player not found'}, 404)
-  
+
   ser_player = player_schema.dump(player)
   return custom_response(ser_player, 200)
 
@@ -100,20 +100,20 @@ def login():
 
   # if error:
   #   return custom_response(error, 400)
-  
+
   if not data.get('email') or not data.get('password'):
     return custom_response({'error': 'you need email and password to sign in'}, 400)
-  
+
   player = PlayerModel.get_player_by_email(data.get('email'))
 
   if not player:
     return custom_response({'error': 'invalid credentials'}, 400)
-  
+
   if not player.check_hash(data.get('password')):
     return custom_response({'error': 'invalid credentials'}, 400)
-  
+
   ser_data = player_schema.dump(player)
-  
+
   token = Auth.generate_token(ser_data.get('id'))
 
   return custom_response({'jwt_token': token}, 200)
