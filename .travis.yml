@@ -7,11 +7,16 @@ language: python
 # Set python version
 python: 3.7.5
 
+# Setting up Isolated vitrualenvs
+
+virtualenv:
+  system_site_packages: true
+
 install:
   - pip install pipenv
   - pip install pipenv pytest
   - pipenv install
-  
+
 # Run tests
 # script:
 #   - pytest
