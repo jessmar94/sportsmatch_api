@@ -13,5 +13,5 @@ script:
 #- pytest --cov=src --cov-config .coveragerc
 # after_success:
 #   - coveralls
-addons:
-- postgresql: "9.3"
+# addons:
+# - postgresql: "9.3"
