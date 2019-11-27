@@ -1,37 +1,7 @@
-# # Disable sudo to speed up build
-# sudo: false
-#
-# # Set build language to Python
-# language: python
-#
-# # Set python version
-# python: 3.7.5
-#
-# # Setting up Isolated vitrualenvs
-#
-# # virtualenv:
-# #   system_site_packages: true
-#
-# install:
-#   - pip install pipenv
-#   - pip install --dev
-#   - pip install pipenv pytest
-#
-# # Run tests
-# # script:
-# #   - pytest
-
-# # Submit coverage
-# after_success:
-#   - codecov
-
-  language: python
+language: python
 python:
-  - "3.7.5"
+  - '3.7.5'
 install:
-  - pip install pipenv
-  - pipenv install
-script:
-  - echo foo
-# script:
-#   - pytest
+  - 'pip install pipenv'
+  - 'pipenv sync'
+script: 'echo - can't find'
