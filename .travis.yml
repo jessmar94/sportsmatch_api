@@ -10,10 +10,11 @@ install:
 - pipenv install --dev
 script:
 - echo "skipping tests"
-#- pytest --cov=src --cov-config .coveragerc
+py.test --cov=src --cov-config .coveragerc --cov-report term-missing
+
 # after_success:
 #   - coveralls
 env:
   - TEST_DATABASE_URL="postgres://travis@localhost:3306/sportsmatch_api_test_db"
-addons:
-- postgresql: "9.3"
+# addons:
+# - postgresql: "9.3"
