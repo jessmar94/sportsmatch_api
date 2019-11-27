@@ -80,12 +80,14 @@ def edit_game(game_id):
     data = game_schema.dump(game)
     if not game:
         return custom_response({'error': 'game not found'}, 404)
-    if data.get('organiser_id') != g.player.get('id'):
+    if data.get('organiser_id') == g.player.get('id') or data.get('opponent_id') == g.player.get('id'):
+        data = game_schema.load(req_data, partial=True)
+        game.update(data)
+        data = game_schema.dump(game)
+        return custom_response(data, 201)
+    else:
         return custom_response({'error': 'permission denied'}, 400)
-    data = game_schema.load(req_data, partial=True)
-    game.update(data)
-    data = game_schema.dump(game)
-    return custom_response(data, 201)
+
 
 @game_api.route('/<int:game_id>', methods=['DELETE'])
 @Auth.auth_required
