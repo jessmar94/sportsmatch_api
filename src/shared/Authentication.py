@@ -50,6 +50,14 @@ class Auth():
       return re
 
   @staticmethod
+  def current_user_id():
+    token = request.headers.get('api-token')
+    data = Auth.decode_token(token)
+    print("________")
+    print(data)
+    return data['data']['player_id']
+
+  @staticmethod
   def auth_required(func):
     """
     Auth decorator
@@ -70,9 +78,9 @@ class Auth():
           response=json.dumps(data['error']),
           status=400
         )
-        
+
       player_id = data['data']['player_id']
-      
+
       check_player = PlayerModel.get_one_player(player_id)
       if not check_player:
         return Response(
@@ -84,4 +92,3 @@ class Auth():
       g.player = {'id': player_id}
       return func(*args, **kwargs)
     return decorated_auth
-
