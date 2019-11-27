@@ -26,18 +26,10 @@
 #   - codecov
 
   language: python
-  python:
-    - "3.7.5"
-  # services:
-  #   - postgresql
-  # before_script:
-  #   - psql -c 'create database sportsmatch_api_test_db;' -U postgres
-  install:
-    - pip install pipenv
-    - pipenv install
-  # script:
-  #   - pytest --cov=src --cov-config .coveragerc
-  # after_success:
-  #   - coveralls
-  # addons:
-  #   - postgresql: "11.5"
+python:
+  - 3.7.5
+
+install:
+  - make init
+script:
+  - make test
