@@ -10,7 +10,7 @@ install:
 - pipenv install --dev
 script:
 - echo "skipping tests"
-- pytest --cov=src --cov-config .coveragerc
+py.test --cov=src --cov-config .coveragerc --cov-report term-missing
 #- pytest --cov=src --cov-config .coveragerc
 # after_success:
 #   - coveralls
