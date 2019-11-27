@@ -60,13 +60,19 @@ class ResultsTest(unittest.TestCase):
   def test_create_a_result(self):
     res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
     api_token = json.loads(res.data).get('jwt_token')
-    print(api_token)
     res = self.client().post('api/v1/results/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_1))
     json_data = json.loads(res.data)
-    print(json_data)
     self.assertEqual(res.status_code, 201)
 
-  # def test_create_
+  # def test_player_can_edit_result(self):
+  #   res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+  #   api_token = json.loads(res.data).get('jwt_token')
+  #   res = self.client().post('api/v1/results/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_1))
+  #   self.assertEqual(res.status_code, 201)
+  #   res = self.client().post('api/v1/resul')
+
+  # def test_player_can_view_all_their_results(self):
+
 
   def tearDown(self):
     """
