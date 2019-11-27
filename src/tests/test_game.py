@@ -24,7 +24,7 @@ class GamesTest(unittest.TestCase):
       "dob": "1990-01-01",
       "ability": "Beginner"
     }
-    
+
     self.player_2 = {
       "first_name": "Pam",
       "last_name": "M",
@@ -42,14 +42,15 @@ class GamesTest(unittest.TestCase):
       db.session.commit()
       db.session.refresh(player)
       player_1_id = player.id
-      player = PlayerModel(self.player_2)
-      player_2 = db.session.add(player)
-      print(player_1_id)
+      player2 = PlayerModel(self.player_2)
+      db.session.add(player2)
       db.session.commit()
+      db.session.refresh(player2)
+      player_2_id = player2.id
 
     self.game = {
-      "organiser_id": 3,
-      "opponent_id": 4,
+      "organiser_id": player_1_id,
+      "opponent_id": player_2_id,
       "confirmed": "false",
       "game_date": "2019-11-01",
       "game_time": "17:00:00"
@@ -57,15 +58,13 @@ class GamesTest(unittest.TestCase):
 
   def test_game_created(self):
     """ test game is created with valid credentials """
-    auth = Auth
-    token = auth.generate_token
-    print('token')
-    print(token)
-    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': token}, data=json.dumps(self.game))
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
     json_data = json.loads(res.data)
-    # self.assertTrue(json_data.get('opponent_id'))
+    self.assertEqual(json_data.get('organiser_id'), 1)
     self.assertEqual(res.status_code, 201)
-  
+
   def tearDown(self):
     """
     Runs at the end of the test case; drops the db
