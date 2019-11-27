@@ -4,6 +4,7 @@ from . import db # import db instance from models/__init__.py
 from ..app import bcrypt
 from .GameModel import GameSchema
 from .ResultModel import ResultSchema
+# import from sqlalchemy import and_
 
 class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   """
@@ -84,7 +85,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     serialized_player = player_schema.dump(player)
     player_ability = serialized_player['ability']
 
-    return PlayerModel.query.filter(PlayerModel.ability==player_ability)
+    return PlayerModel.query.filter(PlayerModel.ability==player_ability, PlayerModel.id != value)
 
   def __repr__(self): # returns a printable representation of the PlayerModel object (returning the id only)
     return '<id {}>'.format(self.id)
