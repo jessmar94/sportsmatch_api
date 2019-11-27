@@ -8,6 +8,8 @@ from .models import ResultModel
 from .views.ResultView import result_api as result_blueprint
 from .views.PlayerView import player_api as player_blueprint
 
+from .views.GameView import game_api as game_blueprint # add this line
+
 def create_app(env_name):
   """
   Create app
@@ -23,7 +25,11 @@ def create_app(env_name):
 
   db.init_app(app)
 
+
+  app.register_blueprint(game_blueprint, url_prefix='/api/v1/games')
+
   app.register_blueprint(result_blueprint, url_prefix='/api/v1/results')
+
   app.register_blueprint(player_blueprint, url_prefix='/api/v1/players')
 
 
