@@ -5,14 +5,6 @@ from ..shared.Authentication import Auth
 player_api = Blueprint('player', __name__)
 player_schema = PlayerSchema()
 
-@player_api.route('/', methods=['GET'])
-def index():
-  return render_template('index.html')
-
-@player_api.route('/new', methods=['GET'])
-def signup():
-  return render_template('signup.html')
-
 @player_api.route('/new', methods=['POST'])
 def create():
   """
@@ -34,10 +26,6 @@ def create():
   token = Auth.generate_token(player_data.get('id'))
 
   return custom_response({'jwt_token': token}, 201)
-  
-@player_api.route('/login', methods=['GET'])
-def login_creds():
-  return render_template('login.html')
 
 @player_api.route('/login', methods=['POST'])
 def login():
@@ -71,6 +59,8 @@ def get_a_player(player_id):
   Get a single player
   """
   player = PlayerModel.get_one_player(player_id)
+  player_data = player_schema.dump(player)
+
   if not player:
     return custom_response({'error': 'player not found'}, 404)
   
