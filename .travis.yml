@@ -29,6 +29,7 @@
 python:
   - 3.7.5
 install:
-  - pip install  -r ./requirments.txt
-script:
-  - pytest
+  - pip install pipenv
+  - pipenv install
+# script:
+#   - pytest
