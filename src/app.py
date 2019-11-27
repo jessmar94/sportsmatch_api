@@ -1,5 +1,5 @@
 from flask import Flask
-
+from flask_cors import CORS
 from .config import app_config
 from .models import db, bcrypt
 from .models import PlayerModel
@@ -16,8 +16,11 @@ def create_app(env_name):
   # app initiliazation
   app = Flask(__name__)
 
+  cors = CORS(app)
+
   app.config.from_object(app_config[env_name])
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+  app.config['CORS_HEADERS'] = 'Content-Type'
 
   bcrypt.init_app(app)
 
@@ -25,7 +28,6 @@ def create_app(env_name):
 
   app.register_blueprint(result_blueprint, url_prefix='/api/v1/results')
   app.register_blueprint(player_blueprint, url_prefix='/api/v1/players')
-
 
   @app.route('/', methods=['GET'])
   def index():

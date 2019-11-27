@@ -1,4 +1,4 @@
-import jwt
+from flask_jwt import jwt, current_identity
 import os
 import datetime
 from flask import json, Response, request, g
@@ -82,5 +82,6 @@ class Auth():
         )
         # if token is valid, save the payload dara to g (g is a global variable in flask)
       g.player = {'id': player_id}
+      print(current_identity)
       return func(*args, **kwargs)
     return decorated_auth
