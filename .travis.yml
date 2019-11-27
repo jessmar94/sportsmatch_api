@@ -9,8 +9,7 @@ install:
 - pip install pipenv
 - pipenv install --dev
 script:
-- echo "skipping tests"
-py.test --cov=src --cov-config .coveragerc --cov-report term-missing
+- py.test --cov=src --cov-config .coveragerc --cov-report term-missing
 
 # after_success:
 #   - coveralls
