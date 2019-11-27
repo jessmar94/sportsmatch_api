@@ -31,5 +31,7 @@ python:
 install:
   - pip install pipenv
   - pipenv install
+script:
+  - echo foo
 # script:
 #   - pytest
