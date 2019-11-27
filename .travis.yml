@@ -5,10 +5,10 @@ services:
  - postgresql
 before_script:
 - psql -c 'create database sportsmatch_api_test_db;' -U postgres
+- python manage.py upgrade
 install:
 - pip install pipenv
 - pipenv install --dev
-- python manage.py upgrade
 script:
 - echo "skipping tests"
 #- pytest --cov=src --cov-config .coveragerc
