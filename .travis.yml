@@ -30,6 +30,6 @@ python:
   - 3.7.5
 
 install:
-  - make init
+  - pip install  -r requirments.txt
 script:
-  - make test
+  - pytest
