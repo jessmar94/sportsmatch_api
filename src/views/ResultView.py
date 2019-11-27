@@ -9,7 +9,7 @@ result_schema = ResultSchema()
 @result_api.route('/', methods=['GET'])
 @Auth.auth_required
 def get_all():
-    current_user_id = g.player.get('id')
+    current_user_id = Auth.current_user_id()
     host = GameModel.get_game_by_org_id(current_user_id)
     guest = GameModel.get_game_by_opp_id(current_user_id)
     games = [*host, *guest]
@@ -22,7 +22,7 @@ def get_all():
 
 @result_api.route('/', methods=['POST'])
 @Auth.auth_required
-def create():  
+def create():
       """
       Create Result Function
       """
@@ -41,10 +41,10 @@ def edit_result(result_id):
     """
     Edit a Result
     """
-    current_user_id = g.player.get('id')
+    current_user_id = Auth.current_user_id()
     req_data = request.get_json()
     result = ResultModel.get_one_result(result_id)
-    game = GameModel.get_one_game(result.id)
+    game = GameModel.get_one_game(result.game_id)
 
     if not result:
       return custom_response({'error': 'result not found'}, 404)
@@ -54,6 +54,7 @@ def edit_result(result_id):
       data = result_schema.dump(result)
       return custom_response(data, 201)
     else:
+      print(game.organiser_id)
       return custom_response({'error': 'only organiser can edit the result'}, 404)
 
 def custom_response(res, status_code):
