@@ -16,6 +16,7 @@ flask-bcrypt = "*"
 pyjwt = "*"
 python-dotenv = "*"
 sqlalchemy-utils = "*"
+codecov = "*"
 
 [requires]
 python_version = "3.7"
