@@ -12,7 +12,7 @@ def create():
   """
   req_data = request.get_json()
   data = player_schema.load(req_data)
-  
+
   player_in_db = PlayerModel.get_player_by_email(data.get('email'))
   if player_in_db:
     message = {'error': 'Player already exist, please supply another email address'}
@@ -38,17 +38,17 @@ def login():
 
   if not data.get('email') or not data.get('password'):
     return custom_response({'error': 'you need email and password to sign in'}, 400)
-  
+
   player = PlayerModel.get_player_by_email(data.get('email'))
 
   if not player:
     return custom_response({'error': 'invalid credentials'}, 400)
-  
+
   if not player.check_hash(data.get('password')):
     return custom_response({'error': 'invalid credentials'}, 400)
-  
+
   player_data = player_schema.dump(player)
-  
+
   token = Auth.generate_token(player_data.get('id'))
 
   return custom_response({'jwt_token': token}, 200)
@@ -65,18 +65,19 @@ def get_a_player(player_id):
   if not player:
     return custom_response({'error': 'player not found'}, 404)
 
-  
+
   player_data = player_schema.dump(player)
   return custom_response(player_data, 200)
 
 
 @player_api.route('/my_profile', methods=['GET'])
 @Auth.auth_required
-def get_me():
+def get_current_user():
   """
   Get logged-in player's details
   """
-  player = PlayerModel.get_one_player(g.player.get('id'))
+  user_id = Auth.current_user_id()
+  player = PlayerModel.get_one_player(user_id)
   player_data = player_schema.dump(player)
 
   return custom_response(player_data, 200)
@@ -87,7 +88,8 @@ def get_all_by_ability():
   """
   View all player's with same ability as logged in player
   """
-  players = PlayerModel.get_players_by_ability(g.player.get('id'))
+  user_id = Auth.current_user_id()
+  players = PlayerModel.get_players_by_ability(user_id)
   players_data = player_schema.dump(players, many=True)
 
   return custom_response(players_data, 200)
@@ -102,7 +104,8 @@ def update():
   req_data = request.get_json()
   data = player_schema.load(req_data, partial=True)
 
-  player = PlayerModel.get_one_player(g.player.get('id'))
+  user_id = Auth.current_user_id()
+  player = PlayerModel.get_one_player(user_id)
   player.update(data)
   player_data = player_schema.dump(player)
 
@@ -115,7 +118,8 @@ def delete():
   """
   Delete logged-in player's account
   """
-  player = PlayerModel.get_one_player(g.player.get('id'))
+  user_id = Auth.current_user_id()
+  player = PlayerModel.get_one_player(user_id)
   player.delete()
 
   return custom_response({'message': 'user deleted'}, 204)
