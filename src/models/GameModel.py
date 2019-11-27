@@ -45,14 +45,22 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
   def delete(self):
     db.session.delete(self)
     db.session.commit()
-  
+
   @staticmethod
   def get_all_games():
     return GameModel.query.all()
-  
+
   @staticmethod
   def get_one_game(id):
     return GameModel.query.get(id)
+
+  @staticmethod
+  def get_game_by_org_id(user_id):
+    return GameModel.query.filter_by(organiser_id=user_id).filter(GameModel.confirmed.is_(True), GameModel.game_date <= datetime.datetime.utcnow())
+
+  @staticmethod
+  def get_game_by_opp_id(user_id):
+    return GameModel.query.filter_by(opponent_id=user_id).filter(GameModel.confirmed.is_(True), GameModel.game_date <= datetime.datetime.utcnow())
 
   def __repr__(self):
     return '<id {}>'.format(self.id)

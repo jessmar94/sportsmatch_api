@@ -17,7 +17,7 @@ def create():
   if player_in_db:
     message = {'error': 'Player already exist, please supply another email address'}
     return custom_response(message, 400)
-  
+
   player = PlayerModel(data)
   player.save()
 
@@ -26,6 +26,7 @@ def create():
   token = Auth.generate_token(player_data.get('id'))
 
   return custom_response({'jwt_token': token}, 201)
+
 
 @player_api.route('/login', methods=['POST'])
 def login():
@@ -63,9 +64,11 @@ def get_a_player(player_id):
 
   if not player:
     return custom_response({'error': 'player not found'}, 404)
+
   
   player_data = player_schema.dump(player)
   return custom_response(player_data, 200)
+
 
 @player_api.route('/my_profile', methods=['GET'])
 @Auth.auth_required
@@ -104,6 +107,7 @@ def update():
   player_data = player_schema.dump(player)
 
   return custom_response(player_data, 200)
+
 
 @player_api.route('/my_profile', methods=['DELETE'])
 @Auth.auth_required
