@@ -8,6 +8,7 @@ before_script:
 install:
 - pip install pipenv
 - pipenv install --dev
+- python manage.py upgrade
 script:
 - echo "skipping tests"
 #- pytest --cov=src --cov-config .coveragerc
