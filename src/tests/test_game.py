@@ -65,6 +65,28 @@ class GamesTest(unittest.TestCase):
     self.assertEqual(json_data.get('organiser_id'), 1)
     self.assertEqual(res.status_code, 201)
 
+  def test_return_all_games(self):
+    """ test game is created with valid credentials """
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
+    json_data = json.loads(res.data)
+    res = self.client().get('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    json_data = json.loads(res.data)
+    self.assertEqual(json_data[0].get('organiser_id'), 1)
+    self.assertEqual(res.status_code, 200)
+
+  # def test_game_deleted(self):
+  #   """ test game is deleted with valid credentials """
+  #   res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+  #   api_token = json.loads(res.data).get('jwt_token')
+  #   res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
+  #   json_data = json.loads(res.data)
+  #   print(self.game)
+  #   res = self.client().delete('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token})
+  #   # self.assertEqual(json_data.get('organiser_id'), 1)
+  #   self.assertEqual(res.status_code, 204)
+
   def tearDown(self):
     """
     Runs at the end of the test case; drops the db
