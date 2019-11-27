@@ -17,6 +17,8 @@ pyjwt = "*"
 python-dotenv = "*"
 sqlalchemy-utils = "*"
 codecov = "*"
+pytest-cov = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.7"
