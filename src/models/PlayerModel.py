@@ -4,6 +4,7 @@ from . import db # import db instance from models/__init__.py
 from ..app import bcrypt
 from .GameModel import GameSchema
 from .ResultModel import ResultSchema
+# import from sqlalchemy import and_
 
 class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   """
@@ -11,7 +12,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   """
 
   # name our table 'players'
-  __tablename__ = 'players' 
+  __tablename__ = 'players'
 
   id = db.Column(db.Integer, primary_key=True)
   first_name = db.Column(db.String(60), nullable=False)
@@ -29,7 +30,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   # loser = db.relationship("ResultModel", backref="playerModel", lazy=True)
 
   # class constructor to set class attributes
-  def __init__(self, data): 
+  def __init__(self, data):
     """
     Class constructor
     """
@@ -43,11 +44,11 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
 
-  def save(self): 
+  def save(self):
     db.session.add(self)
     db.session.commit()
 
-  def update(self, data): 
+  def update(self, data):
     for key, item in data.items():
         if key == 'password':
             self.password = self.__generate_hash(value)
@@ -55,7 +56,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.modified_at = datetime.datetime.utcnow()
     db.session.commit()
 
-  def delete(self): 
+  def delete(self):
     db.session.delete(self)
     db.session.commit()
 
@@ -79,11 +80,12 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
 
   @staticmethod
   def get_players_by_ability(value):
-    player = PlayerModel.query.get(value)
-    print("********************")
-    print(player)
-    print("********************")
-    return PlayerModel.query.filter(PlayerModel.ability==playerability)
+    player_schema = PlayerSchema()
+    player = PlayerModel.query.filter_by(id=value).first()
+    serialized_player = player_schema.dump(player)
+    player_ability = serialized_player['ability']
+
+    return PlayerModel.query.filter(PlayerModel.ability==player_ability, PlayerModel.id != value)
 
   def __repr__(self): # returns a printable representation of the PlayerModel object (returning the id only)
     return '<id {}>'.format(self.id)
