@@ -19,6 +19,7 @@ def create():
     return custom_response(message, 400)
 
   player = PlayerModel(data)
+  print(player)
   player.save()
 
   player_data = player_schema.dump(player)
