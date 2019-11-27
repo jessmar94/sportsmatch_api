@@ -33,8 +33,8 @@ def get_all():
     """
     Get All Games
     """
-    # game = GameModel.get_all_games()
-    game = GameModel.get_all_games(g.player.get('id'))
+    user_id = Auth.current_user_id()
+    game = GameModel.get_all_games(user_id)
     data = game_schema.dump(game, many=True)
     return custom_response(data, 200)
 
@@ -57,12 +57,13 @@ def confirm_game(game_id):
     """
     Confirm a Game
     """
+    user_id = Auth.current_user_id()
     req_data = request.get_json()
     game = GameModel.get_one_game(game_id)
     data = game_schema.dump(game)
     if not game:
         return custom_response({'error': 'game not found'}, 404)
-    if data.get('opponent_id') != g.player.get('id'):
+    if data.get('opponent_id') != user_id:
         return custom_response({'error': 'permission denied'}, 400)
     data = game_schema.load(req_data, partial=True)
     game.update(data)
@@ -75,16 +76,18 @@ def edit_game(game_id):
     """
     Edit a Game
     """
+    user_id = Auth.current_user_id()
     req_data = request.get_json()
     game = GameModel.get_one_game(game_id)
     data = game_schema.dump(game)
     if not game:
         return custom_response({'error': 'game not found'}, 404)
-    if data.get('organiser_id') == g.player.get('id') or data.get('opponent_id') == g.player.get('id'):
-        data = game_schema.load(req_data, partial=True)
-        game.update(data)
-        data = game_schema.dump(game)
-        return custom_response(data, 201)
+    if data.get('organiser_id') == user_id\
+        or data.get('opponent_id') == user_id:
+            data = game_schema.load(req_data, partial=True)
+            game.update(data)
+            data = game_schema.dump(game)
+            return custom_response(data, 201)
     else:
         return custom_response({'error': 'permission denied'}, 400)
 
@@ -92,11 +95,12 @@ def edit_game(game_id):
 @game_api.route('/<int:game_id>', methods=['DELETE'])
 @Auth.auth_required
 def delete_game(game_id):
+    user_id = Auth.current_user_id()
     game = GameModel.get_one_game(game_id)
     data = game_schema.dump(game)
     if not game:
         return custom_response({'error': 'game not found'}, 404)
-    if data.get('organiser_id') != g.player.get('id'):
+    if data.get('organiser_id') != user_id:
         return custom_response({'error': 'permission denied'}, 400)
     game.delete()
     return custom_response({'message': 'deleted'}, 204)
