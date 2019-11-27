@@ -10,8 +10,8 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   Player Model
   """
 
-  # table name
-  __tablename__ = 'players' # name our table players
+  # name our table 'players'
+  __tablename__ = 'players' 
 
   id = db.Column(db.Integer, primary_key=True)
   first_name = db.Column(db.String(60), nullable=False)
@@ -24,8 +24,8 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
 
-  # class constructor
-  def __init__(self, data): # class constructor used to set the class attributes
+  # class constructor to set class attributes
+  def __init__(self, data): 
     """
     Class constructor
     """
@@ -39,11 +39,11 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
 
-  def save(self): # use to save players to our db
+  def save(self): 
     db.session.add(self)
     db.session.commit()
 
-  def update(self, data): # use to update a player's record on the db
+  def update(self, data): 
     for key, item in data.items():
         if key == 'password':
             self.password = self.__generate_hash(value)
@@ -51,7 +51,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.modified_at = datetime.datetime.utcnow()
     db.session.commit()
 
-  def delete(self): # use to delete record from the db
+  def delete(self): 
     db.session.delete(self)
     db.session.commit()
 
@@ -73,6 +73,13 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   def get_one_player(id):
     return PlayerModel.query.get(id)
 
+  @staticmethod
+  def get_players_by_ability(value):
+    player = PlayerModel.query.get(value)
+    print("********************")
+    print(player)
+    print("********************")
+    return PlayerModel.query.filter(PlayerModel.ability==playerability)
 
   def __repr__(self): # returns a printable representation of the PlayerModel object (returning the id only)
     return '<id {}>'.format(self.id)
