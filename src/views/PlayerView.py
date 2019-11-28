@@ -52,7 +52,7 @@ def login():
 
   token = Auth.generate_token(player_data.get('id'))
 
-  return custom_response({'jwt_token': token}, 200)
+  return custom_response({'jwt_token': token, 'user_id': player_data.get('id')}, 200)
 
 @player_api.route('/<int:player_id>', methods=['GET'])
 @Auth.auth_required
