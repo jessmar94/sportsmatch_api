@@ -136,6 +136,19 @@ class GamesTest(unittest.TestCase):
     self.assertEqual(json_data.get('error'), 'game not found')
     self.assertEqual(res.status_code, 404)
 
+  def test_error_when_user_is_not_organiser(self):
+    """ test game is deleted with valid credentials """
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_2))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
+    json_data = json.loads(res.data)
+    res = self.client().get('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    json_data = json.loads(res.data)
+    res = self.client().delete('api/v1/games/1', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    json_data = json.loads(res.data)
+    self.assertEqual(json_data.get('error'), 'permission denied')
+    self.assertEqual(res.status_code, 400)
+
   def tearDown(self):
     """
     Runs at the end of the test case; drops the db
