@@ -23,9 +23,10 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
   # new attempt
   organiser = db.relationship("PlayerModel", primaryjoin = "GameModel.organiser_id == PlayerModel.id", backref="organiser")
   opponent = db.relationship("PlayerModel", primaryjoin = "GameModel.opponent_id == PlayerModel.id", backref="opponent")
+  result = db.relationship("ResultModel", uselist=False, back_populates="game")
 
   # many:many way
-    # result = db.relationship("ResultModel", uselist=False, back_populates="game")
+    # result = db.relationship("ResultModpyel", uselist=False, back_populates="game")
   # old way
   # organiser = db.relationship("PlayerModel", foreign_keys=[organiser_id])
   # opponent = db.relationship("PlayerModel", foreign_keys=[opponent_id])
