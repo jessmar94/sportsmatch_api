@@ -18,8 +18,14 @@ class ResultModel(db.Model): # ResultModel class inherits from db.Model
   confirmed = db.Column(db.Boolean, default=False, nullable=False)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
-  game = db.relationship("GameModel", back_populates="result")
+  # new attempt
+  winner = db.relationship("PlayerModel", primaryjoin = "ResultModel.winner_id == PlayerModel.id", backref="winner")
+  loser = db.relationship("PlayerModel", primaryjoin = "ResultModel.loser_id == PlayerModel.id", backref="loser")
+  game = db.relationship("GameModel", primaryjoin = "ResultModel.game_id == GameModel.id", backref="game")
+  # many:many way
+  # game = db.relationship("GameModel", back_populates="result")
 
+  # class constructor
   # class constructor
   def __init__(self, data): # class constructor used to set the class attributes
     """
