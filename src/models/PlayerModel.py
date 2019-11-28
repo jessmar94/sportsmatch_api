@@ -1,4 +1,5 @@
 from marshmallow import fields, Schema
+from sqlalchemy.orm import load_only
 import datetime
 from . import db # import db instance from models/__init__.py
 from ..app import bcrypt
@@ -77,6 +78,11 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   @staticmethod
   def get_one_player(id):
     return PlayerModel.query.get(id)
+
+  @staticmethod
+  def get_opponent_info(id):
+    return PlayerModel.query.with_entities(PlayerModel.first_name).filter_by(id=id).first()
+    # db.session.query(Parts).filter(Parts.name==Part1).first()
 
   @staticmethod
   def get_players_by_ability(value):
