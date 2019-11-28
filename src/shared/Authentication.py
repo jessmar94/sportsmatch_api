@@ -53,8 +53,6 @@ class Auth():
   def current_user_id():
     token = request.headers.get('api-token')
     data = Auth.decode_token(token)
-    print("________")
-    print(data)
     return data['data']['player_id']
 
   @staticmethod
@@ -90,6 +88,5 @@ class Auth():
         )
         # if token is valid, save the payload data to g (g is a global variable in flask)
       g.player = {'id': player_id}
-      print(current_identity)
       return func(*args, **kwargs)
     return decorated_auth
