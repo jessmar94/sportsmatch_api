@@ -7,10 +7,3 @@ def createdb(database_url):
         create_database(engine.url)
 
     print(database_exists(engine.url))
-
-def createdb_test(database_url):
-    engine = create_engine(database_url)
-    if not database_exists(engine.url):
-        create_database(engine.url)
-
-    print(database_exists(engine.url))
