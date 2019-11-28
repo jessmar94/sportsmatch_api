@@ -17,8 +17,13 @@ pyjwt = "*"
 python-dotenv = "*"
 sqlalchemy-utils = "*"
 codecov = "*"
+
+flask-jwt = "*"
+flask-cors = "*"
+
 pytest-cov = "*"
 pytest = "*"
+
 
 [requires]
 python_version = "3.7"
