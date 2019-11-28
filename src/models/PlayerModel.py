@@ -6,6 +6,15 @@ from .GameModel import GameSchema
 from .ResultModel import ResultSchema
 # import from sqlalchemy import and_
 
+players_games_association = db.Table('players_games', db.Model.metadata,
+  db.Column('player_id', db.Integer, db.ForeignKey('players.id')),
+  db.Column('game_id', db.Integer, db.ForeignKey('games.id'))
+)
+
+players_results_association = db.Table('players_results', db.Model.metadata,
+  db.Column('player_id', db.Integer, db.ForeignKey('players.id')),
+  db.Column('result_id', db.Integer, db.ForeignKey('results.id'))
+)
 class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   """
   Player Model
@@ -14,7 +23,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   # name our table 'players'
   __tablename__ = 'players'
 
-  id = db.Column(db.Integer, primary_key=True)
+  id = db.Column(db.Integer, primary_key=True, autoincrement=True)
   first_name = db.Column(db.String(60), nullable=False)
   last_name = db.Column(db.String(60), nullable=False)
   email = db.Column(db.String(128), unique=True, nullable=False)
@@ -24,6 +33,9 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   dob = db.Column(db.Date, nullable=False)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
+  # many to many relationships
+  games = db.relationship("GameModel", secondary=players_games_association)
+  results = db.relationship("ResultModel", secondary=players_results_association)
   # organiser = db.relationship("GameModel",  backref="playerModel", lazy=True)
   # opponent = db.relationship("GameModel",  backref="playerModel", lazy=True)
   # winner = db.relationship("ResultModel",  backref="playerModel", lazy=True)
@@ -37,6 +49,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.first_name = data.get('first_name')
     self.last_name = data.get('last_name')
     self.email = data.get('email')
+    # hash password 
     self.password = self.__generate_hash(data.get('password'))
     self.gender = data.get('gender')
     self.ability = data.get('ability')
@@ -61,10 +74,17 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     db.session.commit()
 
   def __generate_hash(self, password):
-    return bcrypt.generate_password_hash(password, rounds=10).decode("utf-8")
+    hash = bcrypt.generate_password_hash(password, rounds=10).decode('utf-8')
+    return hash
 
   def check_hash(self, password):
-    return bcrypt.check_password_hash(self.password, password)
+    result = bcrypt.check_password_hash(self.password, password)
+    print('-------------------')
+    print(password)
+    print(self.password)
+    print(result)
+    print('-------------------')
+    return result
 
   @staticmethod
   def get_all_players():
