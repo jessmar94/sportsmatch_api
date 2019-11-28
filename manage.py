@@ -8,7 +8,7 @@ load_dotenv()
 from src.app import create_app, db
 
 env_name = os.getenv('FLASK_ENV')
-if env_name != 'production'
+if env_name != 'production': 
     createdb(os.getenv('DATABASE_URL'))
 
 app = create_app(env_name)
