@@ -35,6 +35,16 @@ class GamesTest(unittest.TestCase):
       "ability": "Advanced"
     }
 
+    self.player_3 = {
+      "first_name": "Jess",
+      "last_name": "M",
+      "email": "jess@spam.com",
+      "password": "password",
+      "gender": "F",
+      "dob": "1991-01-01",
+      "ability": "Advanced"
+    }
+
     with self.app.app_context():
       db.create_all()
       player = PlayerModel(self.player_1)
@@ -111,6 +121,21 @@ class GamesTest(unittest.TestCase):
     self.assertEqual(json_data.get('game_date'), "2019-11-01")
     self.assertEqual(json_data.get('game_time'), '12:00:00')
     self.assertEqual(res.status_code, 201)
+
+  def test_error_when_edit_game_does_not_exist(self):
+    updated_game = {
+        "game_time": "12:00:00"
+    }
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
+    json_data = json.loads(res.data)
+    res = self.client().get('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    json_data = json.loads(res.data)
+    res = self.client().patch('api/v1/games/5/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(updated_game))
+    json_data = json.loads(res.data)
+    self.assertEqual(json_data.get('error'), 'game not found')
+    self.assertEqual(res.status_code, 404)
 
   def test_game_deleted(self):
     """ test game is deleted with valid credentials """
