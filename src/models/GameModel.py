@@ -2,6 +2,7 @@ import datetime
 from . import db # import db instance from models/__init__.py
 from marshmallow import fields, Schema
 from .ResultModel import ResultSchema
+from sqlalchemy import or_
 
 class GameModel(db.Model): # GameModel class inherits from db.Model
   """
@@ -19,6 +20,9 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
   game_time = db.Column(db.Time, nullable=False)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
+  organiser = db.relationship("PlayerModel", foreign_keys=[organiser_id])
+  opponent = db.relationship("PlayerModel", foreign_keys=[opponent_id])
+  game = db.relationship("ResultModel", backref="gameModel", lazy=True)
 
   # class constructor
   def __init__(self, data): # class constructor used to set the class attributes
@@ -47,8 +51,8 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
     db.session.commit()
 
   @staticmethod
-  def get_all_games():
-    return GameModel.query.all()
+  def get_all_games(id):
+    return GameModel.query.filter(or_(GameModel.organiser_id==id, GameModel.opponent_id==id))
 
   @staticmethod
   def get_one_game(id):

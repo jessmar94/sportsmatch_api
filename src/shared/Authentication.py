@@ -49,7 +49,14 @@ class Auth():
       re['error'] = {'message': 'Invalid token, please try again with a new token'}
       return re
 
-  # player gets a token when they create an account
+  @staticmethod
+  def current_user_id():
+    token = request.headers.get('api-token')
+    data = Auth.decode_token(token)
+    print("________")
+    print(data)
+    return data['data']['player_id']
+
   @staticmethod
   def auth_required(func):
     """
@@ -71,8 +78,9 @@ class Auth():
           response=json.dumps(data['error']),
           status=400
         )
-        
+
       player_id = data['data']['player_id']
+
       check_player = PlayerModel.get_one_player(player_id)
       if not check_player:
         return Response(
@@ -80,7 +88,7 @@ class Auth():
           response=json.dumps({'error': 'player does not exist, invalid token'}),
           status=400
         )
-        # if token is valid, save the payload dara to g (g is a global variable in flask)
+        # if token is valid, save the payload data to g (g is a global variable in flask)
       g.player = {'id': player_id}
       print(current_identity)
       return func(*args, **kwargs)
