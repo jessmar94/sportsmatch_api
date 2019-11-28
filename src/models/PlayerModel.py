@@ -6,15 +6,6 @@ from .GameModel import GameSchema
 from .ResultModel import ResultSchema
 # import from sqlalchemy import and_
 
-# players_games_association = db.Table('players_games', db.Model.metadata,
-#   db.Column('player_id', db.Integer, db.ForeignKey('players.id')),
-#   db.Column('game_id', db.Integer, db.ForeignKey('games.id'))
-# )
-#
-# players_results_association = db.Table('players_results', db.Model.metadata,
-#   db.Column('player_id', db.Integer, db.ForeignKey('players.id')),
-#   db.Column('result_id', db.Integer, db.ForeignKey('results.id'))
-# )
 class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   """
   Player Model
@@ -33,15 +24,6 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   dob = db.Column(db.Date, nullable=False)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
-  # many to many relationships
-  # games = db.relationship("GameModel", secondary=players_games_association)
-  # results = db.relationship("ResultModel", secondary=players_results_association)
-
-  # old way below
-  # organiser = db.relationship("GameModel",  backref="playerModel", lazy=True)
-  # opponent = db.relationship("GameModel",  backref="playerModel", lazy=True)
-  # winner = db.relationship("ResultModel",  backref="playerModel", lazy=True)
-  # loser = db.relationship("ResultModel", backref="playerModel", lazy=True)
 
   # class constructor to set class attributes
   def __init__(self, data):

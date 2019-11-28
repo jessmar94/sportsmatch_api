@@ -28,8 +28,12 @@ def create():
       """
       # request similar to http
       req_data = request.get_json()
-      # load in format of resultschema
+      # # load in format of resultschema
       data = result_schema.load(req_data)
+      print(data)
+      if ResultModel.get_result_by_game(data.get('game_id')):
+            message = {'error': 'Result already provided'}
+            return custom_response(message, 400)
 
       result = ResultModel(data)
       result.save()
