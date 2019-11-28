@@ -1,13 +1,13 @@
 import os
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-from createdb import createdb_test
+from createdb import createdb
 from dotenv import load_dotenv
 load_dotenv()
 
 from src.app import create_app, db
 
-createdb_test(os.getenv('TEST_DATABASE_URL'))
+createdb(os.getenv('TEST_DATABASE_URL'))
 
 env_name = os.getenv('FLASK_ENV_TEST')
 app = create_app(env_name)
