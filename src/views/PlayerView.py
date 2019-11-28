@@ -1,6 +1,7 @@
 from flask import request, json, Response, Blueprint, g, render_template
 from ..models.PlayerModel import PlayerModel, PlayerSchema
 from ..shared.Authentication import Auth
+import base64
 
 player_api = Blueprint('player', __name__)
 player_schema = PlayerSchema()
@@ -19,7 +20,7 @@ def create():
     return custom_response(message, 400)
 
   player = PlayerModel(data)
-  print(player)
+
   player.save()
 
   player_data = player_schema.dump(player)
@@ -28,6 +29,18 @@ def create():
 
   return custom_response({'jwt_token': token}, 201)
 
+@player_api.route('/image', methods=['POST'])
+@Auth.auth_required
+def add_image():
+  """
+  Add an image
+  """
+  print(request)
+  req_data = request.get_json()
+  image = req_data['image']
+  print [format(ord(c), '08b') for c in base64.b64decode(image)]
+  # print('image')
+  # print(req_data.image)
 
 @player_api.route('/login', methods=['POST'])
 def login():

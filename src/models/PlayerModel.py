@@ -22,6 +22,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   gender = db.Column(db.String(50), nullable=False)
   ability = db.Column(db.String(50), nullable=False)
   dob = db.Column(db.Date, nullable=False)
+  profile_image = db.Column(db.LargeBinary, nullable=True)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
   # organiser = db.relationship("GameModel",  backref="playerModel", lazy=True)
