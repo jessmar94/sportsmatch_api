@@ -6,24 +6,24 @@ from .GameModel import GameSchema
 from .ResultModel import ResultSchema
 # import from sqlalchemy import and_
 
-players_games_association = db.Table('players_games', db.Model.metadata,
-  db.Column('player_id', db.Integer, db.ForeignKey('players.id')),
-  db.Column('game_id', db.Integer, db.ForeignKey('games.id'))
-)
-
-players_results_association = db.Table('players_results', db.Model.metadata,
-  db.Column('player_id', db.Integer, db.ForeignKey('players.id')),
-  db.Column('result_id', db.Integer, db.ForeignKey('results.id'))
-)
+# players_games_association = db.Table('players_games', db.Model.metadata,
+#   db.Column('player_id', db.Integer, db.ForeignKey('players.id')),
+#   db.Column('game_id', db.Integer, db.ForeignKey('games.id'))
+# )
+#
+# players_results_association = db.Table('players_results', db.Model.metadata,
+#   db.Column('player_id', db.Integer, db.ForeignKey('players.id')),
+#   db.Column('result_id', db.Integer, db.ForeignKey('results.id'))
+# )
 class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   """
   Player Model
   """
 
-  # name our table 'players'
-  __tablename__ = 'players'
+  # table name
+  __tablename__ = 'players' # name our table players
 
-  id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+  id = db.Column(db.Integer, primary_key=True)
   first_name = db.Column(db.String(60), nullable=False)
   last_name = db.Column(db.String(60), nullable=False)
   email = db.Column(db.String(128), unique=True, nullable=False)
@@ -34,8 +34,10 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
   # many to many relationships
-  games = db.relationship("GameModel", secondary=players_games_association)
-  results = db.relationship("ResultModel", secondary=players_results_association)
+  # games = db.relationship("GameModel", secondary=players_games_association)
+  # results = db.relationship("ResultModel", secondary=players_results_association)
+
+  # old way below
   # organiser = db.relationship("GameModel",  backref="playerModel", lazy=True)
   # opponent = db.relationship("GameModel",  backref="playerModel", lazy=True)
   # winner = db.relationship("ResultModel",  backref="playerModel", lazy=True)
@@ -49,7 +51,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.first_name = data.get('first_name')
     self.last_name = data.get('last_name')
     self.email = data.get('email')
-    # hash password 
+    # hash password
     self.password = self.__generate_hash(data.get('password'))
     self.gender = data.get('gender')
     self.ability = data.get('ability')
