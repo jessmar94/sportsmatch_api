@@ -34,14 +34,27 @@ class ResultsTest(unittest.TestCase):
     self.game_1 = {
       "organiser_id": 1,
       "opponent_id": 2,
-      "confirmed": "False",
+      "confirmed": "true",
       "game_date": "2019-01-01",
+      "game_time": "15:00:00"
+    }
+    self.game_2 = {
+      "organiser_id": 1,
+      "opponent_id": 2,
+      "confirmed": "true",
+      "game_date": "2019-11-01",
       "game_time": "15:00:00"
     }
     self.result_1 = {
       "game_id": 1,
       "winner_id": 2,
       "loser_id": 1,
+      "confirmed": "False"
+    }
+    self.result_2 = {
+      "game_id": 2,
+      "winner_id": 1,
+      "loser_id": 2,
       "confirmed": "False"
     }
 
@@ -53,7 +66,9 @@ class ResultsTest(unittest.TestCase):
       db.session.add(player2)
 
       game1 = GameModel(self.game_1)
+      game2 = GameModel(self.game_2)
       db.session.add(game1)
+      db.session.add(game2)
 
       db.session.commit()
 
@@ -64,14 +79,46 @@ class ResultsTest(unittest.TestCase):
     json_data = json.loads(res.data)
     self.assertEqual(res.status_code, 201)
 
-  # def test_player_can_edit_result(self):
+  # def test_player_can_view_all_their_results(self):
   #   res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
   #   api_token = json.loads(res.data).get('jwt_token')
   #   res = self.client().post('api/v1/results/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_1))
   #   self.assertEqual(res.status_code, 201)
-  #   res = self.client().post('api/v1/resul')
+  #   res = self.client().post('api/v1/results/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_2))
+  #   self.assertEqual(res.status_code, 201)
+  #   json_data = json.loads(res.data)
+  #   print(json_data)
+  #   res = self.client().get('api/v1/results/', headers={'Content-Type': 'application/json', 'api-token': api_token})
+  #   self.assertEqual(res.status_code, 200)
+  #   json_data = json.loads(res.data)
+  #   print(json_data)
+  #   self.assertEqual(json_data[0].get('winner_id'), 2)
+  #   self.assertEqual(json_data[1].get('winner_id'), 1)
 
-  # def test_player_can_view_all_their_results(self):
+  def test_player_can_edit_their_results(self):
+    edited_result = {
+      "winner_id": 1,
+      "loser_id": 2
+    }
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().post('api/v1/results/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_1))
+    self.assertEqual(res.status_code, 201)
+    res = self.client().patch('api/v1/results/1/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(edited_result))
+    json_data = json.loads(res.data)
+    self.assertEqual(res.status_code, 201)
+    self.assertEqual(json_data.get('winner_id'), 1)
+    self.assertNotEqual(json_data.get('loser_id'), 1)
+
+  def test_error_if_result_not_found(self):
+    edited_result = {
+      "winner_id": 2,
+      "loser_id": 1
+    }
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().patch('api/v1/results/1/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(edited_result))
+    self.assertEqual(res.status_code, 404)
 
 
   def tearDown(self):
