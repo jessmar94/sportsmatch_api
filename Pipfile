@@ -22,6 +22,7 @@ flask-cors = "*"
 pytest-cov = "*"
 pytest = "*"
 gunicorn = "*"
+pgeocode = "*"
 
 [requires]
 python_version = "3.7"
