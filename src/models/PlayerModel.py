@@ -20,6 +20,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   last_name = db.Column(db.String(60), nullable=False)
   email = db.Column(db.String(128), unique=True, nullable=False)
   password = db.Column(db.String(128), nullable=False)
+  postcode = db.Column(db.String(20), nullable=False)
   gender = db.Column(db.String(50), nullable=False)
   ability = db.Column(db.String(50), nullable=False)
   dob = db.Column(db.Date, nullable=False)
