@@ -137,7 +137,7 @@ class PlayersTest(unittest.TestCase):
     res = self.client().get('api/v1/players/', headers={'Content-Type': 'application/json', 'api-token': api_token})
     json_data = json.loads(res.data)
     self.assertEqual(res.status_code, 200)
-    
+
     for item in json_data:
       if (item['ability']) != 'Beginner':
         result = "Error!"
@@ -186,7 +186,7 @@ class PlayersTest(unittest.TestCase):
     api_token = json.loads(res.data).get('jwt_token')
     res = self.client().delete('api/v1/players/my_profile', headers={'Content-Type': 'application/json', 'api-token': api_token})
     self.assertEqual(res.status_code, 204)
-  
+
   def tearDown(self):
     """
     Runs at the end of the test case; drops the db
