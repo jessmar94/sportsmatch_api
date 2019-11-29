@@ -1,4 +1,4 @@
-import jwt
+from flask_jwt import jwt, current_identity
 import os
 import datetime
 from flask import json, Response, request, g
@@ -53,8 +53,6 @@ class Auth():
   def current_user_id():
     token = request.headers.get('api-token')
     data = Auth.decode_token(token)
-    print("________")
-    print(data)
     return data['data']['player_id']
 
   @staticmethod
