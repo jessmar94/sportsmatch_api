@@ -40,10 +40,10 @@ def add_image():
   player = PlayerModel.get_one_player(user_id)
   req_data = request.get_json()
   decoded_image = base64.b64decode(req_data['image'])
-  binary = ("".join(["{:08b}".format(x) for x in decoded_image]))
-  player.update({'profile_image': (bytes(binary, "utf-8"))})
+  binary = bytes(("".join(["{:08b}".format(x) for x in decoded_image])), "utf-8")
+  player.update({'profile_image': binary})
 
-  return custom_response('success', 200)
+  return custom_response('image saved', 200)
 
 @player_api.route('/login', methods=['POST'])
 def login():
