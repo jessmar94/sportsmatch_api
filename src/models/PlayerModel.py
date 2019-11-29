@@ -44,6 +44,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.dob = data.get('dob')
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
+    self.profile_image = data.get('profile_image')
 
   def save(self):
     db.session.add(self)

@@ -1,6 +1,7 @@
 from flask import request, json, Response, Blueprint, g, render_template
 from ..models.PlayerModel import PlayerModel, PlayerSchema
 from ..shared.Authentication import Auth
+# from base64 import decodestring
 import base64
 
 player_api = Blueprint('player', __name__)
@@ -35,12 +36,14 @@ def add_image():
   """
   Add an image
   """
-  print(request)
+  user_id = Auth.current_user_id()
+  player = PlayerModel.get_one_player(user_id)
   req_data = request.get_json()
-  image = req_data['image']
-  print [format(ord(c), '08b') for c in base64.b64decode(image)]
-  # print('image')
-  # print(req_data.image)
+  decoded_image = base64.b64decode(req_data['image'])
+  binary = ("".join(["{:08b}".format(x) for x in decoded_image]))
+  player.update({'profile_image': (bytes(binary, "utf-8"))})
+
+  return custom_response('success', 200)
 
 @player_api.route('/login', methods=['POST'])
 def login():
