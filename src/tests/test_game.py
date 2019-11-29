@@ -35,6 +35,16 @@ class GamesTest(unittest.TestCase):
       "ability": "Advanced"
     }
 
+    self.player_3 = {
+      "first_name": "Jess",
+      "last_name": "M",
+      "email": "jess@spam.com",
+      "password": "password",
+      "gender": "F",
+      "dob": "1991-01-01",
+      "ability": "Advanced"
+    }
+
     with self.app.app_context():
       db.create_all()
       player = PlayerModel(self.player_1)
@@ -56,6 +66,14 @@ class GamesTest(unittest.TestCase):
       "game_time": "17:00:00"
     }
 
+    self.game_2 = {
+      "organiser_id": player_2_id,
+      "opponent_id": player_1_id,
+      "confirmed": "false",
+      "game_date": "2019-11-01",
+      "game_time": "11:00:00"
+    }
+
   def test_game_created(self):
     """ test game is created with valid credentials """
     res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
@@ -65,8 +83,7 @@ class GamesTest(unittest.TestCase):
     self.assertEqual(json_data.get('organiser_id'), 1)
     self.assertEqual(res.status_code, 201)
 
-  def test_return_all_games(self):
-    """ test game is created with valid credentials """
+  def test_return_one_game(self):
     res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
     api_token = json.loads(res.data).get('jwt_token')
     res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
@@ -76,16 +93,86 @@ class GamesTest(unittest.TestCase):
     self.assertEqual(json_data[0].get('organiser_id'), 1)
     self.assertEqual(res.status_code, 200)
 
-  # def test_game_deleted(self):
-  #   """ test game is deleted with valid credentials """
-  #   res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
-  #   api_token = json.loads(res.data).get('jwt_token')
-  #   res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
-  #   json_data = json.loads(res.data)
-  #   print(self.game)
-  #   res = self.client().delete('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token})
-  #   # self.assertEqual(json_data.get('organiser_id'), 1)
-  #   self.assertEqual(res.status_code, 204)
+  def test_return_all_games(self):
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
+    json_data = json.loads(res.data)
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game_2))
+    json_data = json.loads(res.data)
+    res = self.client().get('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    json_data = json.loads(res.data)
+    self.assertEqual(json_data[0].get('organiser_id'), 1)
+    self.assertEqual(json_data[1].get('organiser_id'), 2)
+    self.assertEqual(res.status_code, 200)
+
+  def test_edit_game(self):
+    updated_game = {
+        "game_time": "12:00:00"
+    }
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
+    json_data = json.loads(res.data)
+    res = self.client().get('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    json_data = json.loads(res.data)
+    res = self.client().patch('api/v1/games/1/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(updated_game))
+    json_data = json.loads(res.data)
+    self.assertEqual(json_data.get('game_date'), "2019-11-01")
+    self.assertEqual(json_data.get('game_time'), '12:00:00')
+    self.assertEqual(res.status_code, 201)
+
+  def test_error_when_edit_game_does_not_exist(self):
+    updated_game = {
+        "game_time": "12:00:00"
+    }
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
+    json_data = json.loads(res.data)
+    res = self.client().get('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    json_data = json.loads(res.data)
+    res = self.client().patch('api/v1/games/5/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(updated_game))
+    json_data = json.loads(res.data)
+    self.assertEqual(json_data.get('error'), 'game not found')
+    self.assertEqual(res.status_code, 404)
+
+  def test_game_deleted(self):
+    """ test game is deleted with valid credentials """
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
+    json_data = json.loads(res.data)
+    res = self.client().get('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    json_data = json.loads(res.data)
+    res = self.client().delete('api/v1/games/1', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    self.assertEqual(res.status_code, 204)
+
+  def test_error_when_delete_game_that_does_not_exist(self):
+    """ test game is deleted with valid credentials """
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
+    json_data = json.loads(res.data)
+    res = self.client().get('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    json_data = json.loads(res.data)
+    res = self.client().delete('api/v1/games/4', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    json_data = json.loads(res.data)
+    self.assertEqual(json_data.get('error'), 'game not found')
+    self.assertEqual(res.status_code, 404)
+
+  def test_error_when_user_is_not_organiser(self):
+    """ test game is deleted with valid credentials """
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_2))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
+    json_data = json.loads(res.data)
+    res = self.client().get('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    json_data = json.loads(res.data)
+    res = self.client().delete('api/v1/games/1', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    json_data = json.loads(res.data)
+    self.assertEqual(json_data.get('error'), 'permission denied')
+    self.assertEqual(res.status_code, 400)
 
   def tearDown(self):
     """
