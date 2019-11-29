@@ -1,9 +1,11 @@
 from flask import request, g, Blueprint, json, Response
 from ..shared.Authentication import Auth
 from ..models.GameModel import GameModel, GameSchema
+from ..models.PlayerModel import PlayerModel, PlayerSchema
 
 game_api = Blueprint('game_api', __name__)
 game_schema = GameSchema()
+player_schema = PlayerSchema()
 
 def custom_response(res, status_code):
   """
@@ -31,12 +33,18 @@ def get_one(game_id):
 @Auth.auth_required
 def get_all():
     """
-    Get All Games
+    Get All Games related to a user
     """
     user_id = Auth.current_user_id()
-    game = GameModel.get_all_games(user_id)
-    data = game_schema.dump(game, many=True)
-    return custom_response(data, 200)
+    games = GameModel.get_all_users_games(user_id)
+    data = game_schema.dump(games, many=True)
+    results = []
+    for game in data:
+      if game['organiser_id'] == user_id:
+        results.append({**game, **PlayerModel.get_opponent_info(game['opponent_id'])})
+      elif game['opponent_id'] == user_id:
+        results.append({**game, **PlayerModel.get_opponent_info(game['organiser_id'])})
+    return custom_response(results, 200)
 
 @game_api.route('/', methods=['POST'])
 @Auth.auth_required
