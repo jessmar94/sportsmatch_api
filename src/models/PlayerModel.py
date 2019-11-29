@@ -25,10 +25,6 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   profile_image = db.Column(db.LargeBinary, nullable=True)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
-  # organiser = db.relationship("GameModel",  backref="playerModel", lazy=True)
-  # opponent = db.relationship("GameModel",  backref="playerModel", lazy=True)
-  # winner = db.relationship("ResultModel",  backref="playerModel", lazy=True)
-  # loser = db.relationship("ResultModel", backref="playerModel", lazy=True)
 
   # class constructor to set class attributes
   def __init__(self, data):
