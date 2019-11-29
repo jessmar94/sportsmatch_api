@@ -7,17 +7,23 @@ class ResultModel(db.Model): # ResultModel class inherits from db.Model
     """
     Result Model
     """
-    __tablename__ = 'results' 
+
+    # table name
+    __tablename__ = 'results' # name our table Results
 
     id = db.Column(db.Integer, primary_key=True)
-    game_id = db.Column(db.Integer, db.ForeignKey('games.id'), nullable=False)
+    game_id = db.Column(db.Integer, db.ForeignKey('games.id'), nullable=False, unique=True)
     winner_id = db.Column(db.Integer, db.ForeignKey('players.id'))
     loser_id = db.Column(db.Integer, db.ForeignKey('players.id'))
     confirmed = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime)
     modified_at = db.Column(db.DateTime)
+    winner = db.relationship("PlayerModel", primaryjoin = "ResultModel.winner_id == PlayerModel.id", backref="winner")
+    loser = db.relationship("PlayerModel", primaryjoin = "ResultModel.loser_id == PlayerModel.id", backref="loser")
+    game = db.relationship("GameModel", back_populates="result")
 
-    def __init__(self, data): 
+
+    def __init__(self, data): # class constructor used to set the class attributes
         """
         Class constructor: set class attributes
         """
