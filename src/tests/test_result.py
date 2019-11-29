@@ -57,12 +57,12 @@ class ResultsTest(unittest.TestCase):
 
       db.session.commit()
 
-  def test_create_a_result(self):
-    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
-    api_token = json.loads(res.data).get('jwt_token')
-    res = self.client().post('api/v1/results/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_1))
-    json_data = json.loads(res.data)
-    self.assertEqual(res.status_code, 201)
+  # def test_create_a_result(self):
+  #   res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+  #   api_token = json.loads(res.data).get('jwt_token')
+  #   res = self.client().post('api/v1/results/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_1))
+  #   json_data = json.loads(res.data)
+  #   self.assertEqual(res.status_code, 201)
 
   # def test_player_can_edit_result(self):
   #   res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
