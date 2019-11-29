@@ -7,24 +7,30 @@ from .ResultModel import ResultSchema
 # import from sqlalchemy import and_
 
 class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
+  """
+  Player Model
+  """
+
+  # name our table 'players'
+  __tablename__ = 'players'
+
+  id = db.Column(db.Integer, primary_key=True)
+  first_name = db.Column(db.String(60), nullable=False)
+  last_name = db.Column(db.String(60), nullable=False)
+  email = db.Column(db.String(128), unique=True, nullable=False)
+  password = db.Column(db.String(128), nullable=False)
+  gender = db.Column(db.String(50), nullable=False)
+  ability = db.Column(db.String(50), nullable=False)
+  dob = db.Column(db.Date, nullable=False)
+  profile_image = db.Column(db.LargeBinary, nullable=True)
+  created_at = db.Column(db.DateTime)
+  modified_at = db.Column(db.DateTime)
+
+  # class constructor to set class attributes
+  def __init__(self, data):
     """
     Player Model
     """
-
-    # table name
-    __tablename__ = 'players' # name our table 'players'
-
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(60), nullable=False)
-    last_name = db.Column(db.String(60), nullable=False)
-    email = db.Column(db.String(128), unique=True, nullable=False)
-    password = db.Column(db.String(128), nullable=False)
-    gender = db.Column(db.String(50), nullable=False)
-    ability = db.Column(db.String(50), nullable=False)
-    dob = db.Column(db.Date, nullable=False)
-    created_at = db.Column(db.DateTime)
-    modified_at = db.Column(db.DateTime)
-
     # class constructor to set class attributes
     def __init__(self, data):
         """
