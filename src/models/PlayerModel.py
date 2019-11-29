@@ -81,8 +81,9 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
 
   @staticmethod
   def get_opponent_info(id):
-    return PlayerModel.query.with_entities(PlayerModel.first_name).filter_by(id=id).first()
-    # db.session.query(Parts).filter(Parts.name==Part1).first()
+    player_schema = PlayerSchema()
+    player = PlayerModel.query.with_entities(PlayerModel.first_name).filter_by(id=id).first()
+    return player_schema.dump(player)
 
   @staticmethod
   def get_players_by_ability(value):

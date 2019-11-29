@@ -41,13 +41,9 @@ def get_all():
     results = []
     for game in data:
       if game['organiser_id'] == user_id:
-        player = PlayerModel.get_opponent_info(game['opponent_id'])
-        player_data = player_schema.dump(player)
-        results.append({**game, **player_data})
+        results.append({**game, **PlayerModel.get_opponent_info(game['opponent_id'])})
       elif game['opponent_id'] == user_id:
-        player = PlayerModel.get_opponent_info(game['organiser_id'])
-        player_data = player_schema.dump(player)
-        results.append({**game, **player_data})
+        results.append({**game, **PlayerModel.get_opponent_info(game['organiser_id'])})
     return custom_response(results, 200)
 
 @game_api.route('/', methods=['POST'])
