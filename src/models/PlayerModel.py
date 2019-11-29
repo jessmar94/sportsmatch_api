@@ -22,6 +22,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   gender = db.Column(db.String(50), nullable=False)
   ability = db.Column(db.String(50), nullable=False)
   dob = db.Column(db.Date, nullable=False)
+  profile_image = db.Column(db.LargeBinary, nullable=True)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
   # organiser = db.relationship("GameModel",  backref="playerModel", lazy=True)
@@ -32,7 +33,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   # class constructor to set class attributes
   def __init__(self, data):
     """
-    Class constructor
+    Player Model
     """
     self.first_name = data.get('first_name')
     self.last_name = data.get('last_name')
@@ -43,6 +44,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.dob = data.get('dob')
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
+    self.profile_image = data.get('profile_image')
 
   def save(self):
     db.session.add(self)
@@ -91,17 +93,17 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     return '<id {}>'.format(self.id)
 
 class PlayerSchema(Schema):
-  """
-  Player Schema
-  """
-  id = fields.Int(dump_only=True)
-  first_name = fields.Str(required=True)
-  last_name = fields.Str(required=True)
-  email = fields.Email(required=True)
-  password = fields.Str(required=True)
-  ability = fields.Str(required=True)
-  gender = fields.Str(required=True)
-  dob = fields.Date(required=True)
-  created_at = fields.DateTime(dump_only=True)
-  modified_at = fields.DateTime(dump_only=True)
-  games = fields.Nested(GameSchema, many=True)
+    """
+    Player Schema
+    """
+    id = fields.Int(dump_only=True)
+    first_name = fields.Str(required=True)
+    last_name = fields.Str(required=True)
+    email = fields.Email(required=True)
+    password = fields.Str(required=True)
+    ability = fields.Str(required=True)
+    gender = fields.Str(required=True)
+    dob = fields.Date(required=True)
+    created_at = fields.DateTime(dump_only=True)
+    modified_at = fields.DateTime(dump_only=True)
+    games = fields.Nested(GameSchema, many=True)

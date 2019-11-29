@@ -1,0 +1,4 @@
+[MASTER]
+output-format=colorized
+reports=y
+max-line-length=100
