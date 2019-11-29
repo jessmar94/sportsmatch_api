@@ -34,6 +34,18 @@ Run the app:
 ```
 $ python run.py
 ```
+### Run tests
+
+```
+$ py.test --cov=src --cov-config .coveragerc --cov-report term-missing
+```
+
+### Check code quality
+
+To check code quality for all python files in a directory and it's subdirectories
+```
+$  pylint **/*.py 
+```
 
 ## User Stories
 
@@ -41,4 +53,9 @@ $ python run.py
 
 ## Technologies used
 - Python
-- Pylint
+- Flask
+- Pylint (to check code quality)
+- Pytest (unit testing)
+- BCrypt
+- Travis
+- Heroku
