@@ -22,7 +22,8 @@ class GamesTest(unittest.TestCase):
       "password": "password",
       "gender": "M",
       "dob": "1990-01-01",
-      "ability": "Beginner"
+      "ability": "Beginner",
+      "postcode": "n169np"
     }
 
     self.player_2 = {
@@ -32,7 +33,8 @@ class GamesTest(unittest.TestCase):
       "password": "password",
       "gender": "F",
       "dob": "1991-01-01",
-      "ability": "Advanced"
+      "ability": "Advanced",
+      "postcode": "n169np"
     }
 
     self.player_3 = {
@@ -42,7 +44,8 @@ class GamesTest(unittest.TestCase):
       "password": "password",
       "gender": "F",
       "dob": "1991-01-01",
-      "ability": "Advanced"
+      "ability": "Advanced",
+      "postcode": "n169np"
     }
 
     with self.app.app_context():

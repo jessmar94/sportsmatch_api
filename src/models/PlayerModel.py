@@ -5,6 +5,7 @@ from . import db # import db instance from models/__init__.py
 from ..app import bcrypt
 from .GameModel import GameSchema
 from .ResultModel import ResultSchema
+import pgeocode
 # import from sqlalchemy import and_
 
 class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
@@ -20,6 +21,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   last_name = db.Column(db.String(60), nullable=False)
   email = db.Column(db.String(128), unique=True, nullable=False)
   password = db.Column(db.String(128), nullable=False)
+  postcode = db.Column(db.String(20), nullable=False)
   gender = db.Column(db.String(50), nullable=False)
   ability = db.Column(db.String(50), nullable=False)
   dob = db.Column(db.Date, nullable=False)
@@ -42,6 +44,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
     self.profile_image = data.get('profile_image')
+    self.postcode = data.get('postcode')
 
   def save(self):
     db.session.add(self)
@@ -74,6 +77,10 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     return PlayerModel.query.filter_by(email=value).first()
 
   @staticmethod
+  def get_player_by_id(value):
+    return PlayerModel.query.filter_by(id=value).first()
+
+  @staticmethod
   def get_one_player(id):
     return PlayerModel.query.get(id)
 
@@ -85,12 +92,40 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
 
   @staticmethod
   def get_players_by_ability(value):
-    player_schema = PlayerSchema()
-    player = PlayerModel.query.filter_by(id=value).first()
-    serialized_player = player_schema.dump(player)
-    player_ability = serialized_player['ability']
+    user_schema = PlayerSchema()
+    user = PlayerModel.query.filter_by(id=value).first()
+    serialized_user = user_schema.dump(user)
+    user_ability = serialized_user['ability']
+    user_postcode = serialized_user['postcode']
+    # players = PlayerModel.get_all_players()
+    players = PlayerModel.query.filter(PlayerModel.ability==user_ability, PlayerModel.id != value)
+    return players
 
-    return PlayerModel.query.filter(PlayerModel.ability==player_ability, PlayerModel.id != value)
+
+  @staticmethod
+  def get_players_within_distance(value):
+      user_schema = PlayerSchema()
+      user = PlayerModel.query.filter_by(id=value).first()
+      serialized_user = user_schema.dump(user)
+      user_ability = serialized_user['ability']
+      user_postcode = serialized_user['postcode']
+      players = PlayerModel.get_players_by_ability(value)
+      filtered_array = []
+      for player in players:
+          results = PlayerModel.get_distance_between_postcodes(player.postcode, user_postcode, player.id)
+          distances = int(round(results[0]))
+          if distances <= 5:
+              answer = PlayerModel.get_player_by_id(results[1])
+              filtered_array.append(answer)
+      return filtered_array
+
+  @staticmethod
+  def get_distance_between_postcodes(org_code, opp_code, opp_id):
+     new_org_code = org_code[:-3].upper()
+     new_opp_code = opp_code[:-3].upper()
+     country = pgeocode.GeoDistance('gb')
+     distance = [country.query_postal_code(new_org_code, new_opp_code), opp_id]
+     return distance
 
   def __repr__(self): # returns a printable representation of the PlayerModel object (returning the id only)
     return '<id {}>'.format(self.id)
@@ -110,3 +145,4 @@ class PlayerSchema(Schema):
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)
     games = fields.Nested(GameSchema, many=True)
+    postcode = fields.Str(required=True)
