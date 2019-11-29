@@ -5,7 +5,7 @@ from . import db # import db instance from models/__init__.py
 from ..app import bcrypt
 from .GameModel import GameSchema
 from .ResultModel import ResultSchema
-# import from sqlalchemy import and_
+
 
 class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   """
@@ -107,6 +107,24 @@ class PlayerSchema(Schema):
     ability = fields.Str(required=True)
     gender = fields.Str(required=True)
     dob = fields.Date(required=True)
+    profile_image = fields.BytesField(required=True)
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)
     games = fields.Nested(GameSchema, many=True)
+
+class BytesField(fields.Field):
+    """
+    Creating custom field for scheme that serializes base64 to LargeBinary
+    and desrializes LargeBinary to base64
+    """
+
+
+    binary = bytes(("".join(["{:08b}".format(x) for x in decoded_image])), "utf-8")
+    player.update({'profile_image': binary})
+
+    def _serialze(self, value, attr, obj, **kwargs):
+        if value is None:
+            return ""
+        decoded_image = base64.b64decode(value)
+        binary = bytes(("".join(["{:08b}".format(x) for x in decoded_image])), "utf-8")
+        return binary
