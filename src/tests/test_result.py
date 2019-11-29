@@ -20,7 +20,8 @@ class ResultsTest(unittest.TestCase):
           "password": "password",
           "gender": "M",
           "dob": "1990-01-01",
-          "ability": "Beginner"
+          "ability": "Beginner",
+          "postcode": "n169np"
         }
         self.player_2 = {
           "first_name": "Pam",
@@ -29,7 +30,8 @@ class ResultsTest(unittest.TestCase):
           "password": "password",
           "gender": "F",
           "dob": "1990-01-01",
-          "ability": "Beginner"
+          "ability": "Beginner",
+          "postcode": "n169np"
         }
         self.game_1 = {
           "organiser_id": 1,

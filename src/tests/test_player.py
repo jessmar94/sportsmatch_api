@@ -20,7 +20,8 @@ class PlayersTest(unittest.TestCase):
       "password": "password",
       "gender": "M",
       "dob": "1990-01-01",
-      "ability": "Beginner"
+      "ability": "Beginner",
+      "postcode": "n169np"
     }
 
     with self.app.app_context():
@@ -94,7 +95,8 @@ class PlayersTest(unittest.TestCase):
       "password": "password",
       "gender": "F",
       "dob": "1990-01-01",
-      "ability": "Advanced"
+      "ability": "Advanced",
+      "postcode": "n169np"
     }
     res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(player1))
     self.assertEqual(res.status_code, 201)
@@ -116,7 +118,8 @@ class PlayersTest(unittest.TestCase):
       "password": "password",
       "gender": "F",
       "dob": "1990-01-01",
-      "ability": "Beginner"
+      "ability": "Beginner",
+      "postcode": "n169np"
     }
     player2 = {
       "first_name": "Sid",
@@ -125,7 +128,8 @@ class PlayersTest(unittest.TestCase):
       "password": "password",
       "gender": "M",
       "dob": "1990-01-01",
-      "ability": "Advanced"
+      "ability": "Advanced",
+      "postcode": "n169np"
     }
     res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(player1))
     self.assertEqual(res.status_code, 201)
@@ -154,7 +158,8 @@ class PlayersTest(unittest.TestCase):
       "password": "password",
       "gender": "F",
       "dob": "1990-01-01",
-      "ability": "Beginner"
+      "ability": "Beginner",
+      "postcode": "n169np"
     }
     res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(player1))
     self.assertEqual(res.status_code, 201)

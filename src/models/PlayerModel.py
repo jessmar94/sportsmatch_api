@@ -43,6 +43,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
     self.profile_image = data.get('profile_image')
+    self.postcode = data.get('postcode')
 
   def save(self):
     db.session.add(self)
@@ -111,3 +112,4 @@ class PlayerSchema(Schema):
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)
     games = fields.Nested(GameSchema, many=True)
+    postcode = fields.Str(required=True)
