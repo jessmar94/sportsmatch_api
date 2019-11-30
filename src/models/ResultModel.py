@@ -59,6 +59,10 @@ class ResultModel(db.Model): # ResultModel class inherits from db.Model
     def get_result_by_game(value):
         return ResultModel.query.filter_by(game_id=value).first()
 
+    @staticmethod
+    def get_all_results(value):
+        return ResultModel.query.filter_by(game_id=value)
+
     def __repr__(self):
         return '<id {}>'.format(self.id)
 

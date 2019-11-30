@@ -18,7 +18,7 @@ def get_all():
     games = [*host, *guest]
     results = []
     for game in games:
-        result = ResultModel.get_result_by_game(game.id)
+        result = ResultModel.get_all_results(game.id)
         formatted_result = result_schema.dump(result, many=True)
         results.append(formatted_result)
     return custom_response(results, 200)
