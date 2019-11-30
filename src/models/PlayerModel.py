@@ -63,7 +63,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
       if new_points > self.RANKS[current_ability]:
         if current_ability == 'Beginner':
          setattr(self, 'ability', 'Intermediate')
-      elif current_ability == 'Intermediate':
+        elif current_ability == 'Intermediate':
             setattr(self, 'ability', 'Advanced')
 
       setattr(self, 'rank_points', new_points)
@@ -71,7 +71,16 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
       db.session.commit()
 
   def update_loser_rank_points(self):
-      setattr(self, 'rank_points', getattr(self, 'rank_points') - 5)
+      new_points = getattr(self, 'rank_points') - 5
+      current_ability = getattr(self, 'ability')
+
+      if new_points <= self.RANKS[current_ability]:
+        if current_ability == 'Advanced':
+         setattr(self, 'ability', 'Intermediate')
+        elif current_ability == 'Intermediate':
+            setattr(self, 'ability', 'Beginner')
+
+      setattr(self, 'rank_points', new_points)
       self.modified_at = datetime.datetime.utcnow()
       db.session.commit()
 
