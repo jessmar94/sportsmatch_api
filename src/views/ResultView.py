@@ -37,6 +37,9 @@ def create(game_id):
           message = {'error': 'Result already provided'}
           return custom_response(message, 400)
       game = GameModel.get_one_game(game_id)
+      if game.confirmed == False:
+          message = {'error': 'Game needs to be confirmed to add a result'}
+          return custom_response(message, 400)
       if game.organiser_id == current_user_id:
           result = ResultModel(data)
           result.save()
