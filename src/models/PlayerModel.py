@@ -12,6 +12,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   """
   Player Model
   """
+  INITIAL_RANKS = {'Beginner': 50, 'Intermediate': 150, 'Advanced': 250}
 
   # name our table 'players'
   __tablename__ = 'players'
@@ -24,6 +25,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   postcode = db.Column(db.String(20), nullable=False)
   gender = db.Column(db.String(50), nullable=False)
   ability = db.Column(db.String(50), nullable=False)
+  rank_points = db.Column(db.Integer, nullable=False)
   dob = db.Column(db.Date, nullable=False)
   profile_image = db.Column(db.LargeBinary, nullable=True)
   created_at = db.Column(db.DateTime)
@@ -40,11 +42,15 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.password = self.__generate_hash(data.get('password'))
     self.gender = data.get('gender')
     self.ability = data.get('ability')
+    self.rank_points = self.set_rank_points(data.get('ability'))
     self.dob = data.get('dob')
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
     self.profile_image = data.get('profile_image')
     self.postcode = data.get('postcode')
+
+  def set_rank_points(self, ability):
+      return self.INITIAL_RANKS[ability]
 
   def save(self):
     db.session.add(self)
@@ -140,6 +146,7 @@ class PlayerSchema(Schema):
     email = fields.Email(required=True)
     password = fields.Str(required=True)
     ability = fields.Str(required=True)
+    rank_points = fields.Int(required=False)
     gender = fields.Str(required=True)
     dob = fields.Date(required=True)
     created_at = fields.DateTime(dump_only=True)
