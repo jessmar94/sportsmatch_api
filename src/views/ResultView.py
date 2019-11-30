@@ -28,20 +28,15 @@ def get_all():
 
 @result_api.route('/<int:result_id>', methods=['GET'])
 @Auth.auth_required
-def get_one_result():
+def show_one_result(result_id):
     current_user_id = Auth.current_user_id()
-    host = GameModel.get_game_by_org_id(current_user_id)
-    guest = GameModel.get_game_by_opp_id(current_user_id)
-    games = [*host, *guest]
-    results = []
-    for game in games:
-        result = ResultModel.get_one_result(game.id)
-        formatted_result = result_schema.dump(result, many=True)
-        if not formatted_result:
-            continue
 
-        results.append(formatted_result[0])
-    return custom_response(results, 200)
+    result = ResultModel.get_one_result(result_id)
+    if result.winner_id == current_user_id or result.loser_id == current_user_id:
+            data = result_schema.dump(result)
+            return custom_response(data, 200)
+
+    return custom_response("boo", 404)
 
 @result_api.route('/<int:game_id>/new', methods=['POST'])
 @Auth.auth_required
