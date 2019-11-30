@@ -154,16 +154,16 @@ class ResultsTest(unittest.TestCase):
     #     self.assertEqual(res.status_code, 404)
     #     self.assertEqual(json.loads(res.data).get('error'), 'only organiser can edit the result')
 
-    def test_error_if_result_not_found(self):
-        edited_result = {
-          "winner_id": 2,
-          "loser_id": 1
-        }
-        res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
-        api_token = json.loads(res.data).get('jwt_token')
-        res = self.client().patch('api/v1/results/1/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(edited_result))
-        self.assertEqual(res.status_code, 404)
-        self.assertEqual(json.loads(res.data).get('error'), 'result not found')
+    # def test_error_if_result_not_found(self):
+        # edited_result = {
+        #   "winner_id": 2,
+        #   "loser_id": 1
+        # }
+        # res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+        # api_token = json.loads(res.data).get('jwt_token')
+        # res = self.client().patch('api/v1/results/1/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(edited_result))
+        # self.assertEqual(res.status_code, 404)
+        # self.assertEqual(json.loads(res.data).get('error'), 'result not found')
 
     def tearDown(self):
         """
