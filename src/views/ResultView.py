@@ -62,8 +62,10 @@ def edit_result(result_id):
     if game.organiser_id == current_user_id:
         data = result_schema.load(req_data, partial=True)
         print(data)
-        player = PlayerModel.get_one_player(data['winner_id'])
-        player.update_rank_points()
+        winner = PlayerModel.get_one_player(data['winner_id'])
+        loser= PlayerModel.get_one_player(data['loser_id'])
+        winner.update_winner_rank_points()
+        loser.update_loser_rank_points()
         result.update(data)
         data = result_schema.dump(result)
         return custom_response(data, 201)
