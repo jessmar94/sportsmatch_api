@@ -12,6 +12,9 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   """
   Player Model
   """
+  RANKS = {'Beginner': 100, 'Intermediate': 200, 'Advanced': 300}
+  # ABILITIES = {range(0,100): 'Beginner', range(101,200):'Intermediate', range(201,..): 'Advanced'}
+  # abiltiy = ['Beginner', 'Intermediate', 'Advanced']
 
   # name our table 'players'
   __tablename__ = 'players'
@@ -24,6 +27,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   postcode = db.Column(db.String(20), nullable=False)
   gender = db.Column(db.String(50), nullable=False)
   ability = db.Column(db.String(50), nullable=False)
+  rank_points = db.Column(db.Integer, nullable=False)
   dob = db.Column(db.Date, nullable=False)
   profile_image = db.Column(db.LargeBinary, nullable=True)
   created_at = db.Column(db.DateTime)
@@ -40,11 +44,46 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.password = self.__generate_hash(data.get('password'))
     self.gender = data.get('gender')
     self.ability = data.get('ability')
+    self.rank_points = self.set_rank_points(data.get('ability'))
     self.dob = data.get('dob')
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
     self.profile_image = data.get('profile_image')
     self.postcode = data.get('postcode')
+
+  def set_rank_points(self, ability):
+      return self.RANKS[ability]/2
+
+  # def update_rank:
+
+  def update_winner_rank_points(self):
+      new_points = getattr(self, 'rank_points') + 5
+      current_ability = getattr(self, 'ability')
+
+      if new_points > self.RANKS[current_ability]:
+        if current_ability == 'Beginner':
+         setattr(self, 'ability', 'Intermediate')
+        elif current_ability == 'Intermediate':
+            setattr(self, 'ability', 'Advanced')
+
+      setattr(self, 'rank_points', new_points)
+      self.modified_at = datetime.datetime.utcnow()
+      db.session.commit()
+
+  def update_loser_rank_points(self):
+      new_points = getattr(self, 'rank_points') - 5
+      current_ability = getattr(self, 'ability')
+
+      if new_points <= self.RANKS[current_ability]:
+        if current_ability == 'Advanced':
+         setattr(self, 'ability', 'Intermediate')
+        elif current_ability == 'Intermediate':
+            setattr(self, 'ability', 'Beginner')
+
+      setattr(self, 'rank_points', new_points)
+      self.modified_at = datetime.datetime.utcnow()
+      db.session.commit()
+
 
   def save(self):
     db.session.add(self)
@@ -140,6 +179,7 @@ class PlayerSchema(Schema):
     email = fields.Email(required=True)
     password = fields.Str(required=True)
     ability = fields.Str(required=True)
+    rank_points = fields.Int(required=False)
     gender = fields.Str(required=True)
     dob = fields.Date(required=True)
     created_at = fields.DateTime(dump_only=True)

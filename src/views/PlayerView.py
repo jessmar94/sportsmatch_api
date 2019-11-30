@@ -21,7 +21,7 @@ def create():
         return custom_response(message, 400)
 
     player = PlayerModel(data)
-
+    print(player.rank_points)
     player.save()
 
     player_data = player_schema.dump(player)
