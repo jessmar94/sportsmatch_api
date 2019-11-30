@@ -20,7 +20,11 @@ def get_all():
     for game in games:
         result = ResultModel.get_all_results(game.id)
         formatted_result = result_schema.dump(result, many=True)
-        results.append(formatted_result)
+        if not formatted_result:
+            continue
+
+        print(formatted_result)
+        results.append(formatted_result[0])
     return custom_response(results, 200)
 
 @result_api.route('/<int:game_id>/new', methods=['POST'])
