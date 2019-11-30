@@ -108,11 +108,10 @@ def get_all_by_ability():
     View all player's with same ability as logged in player
     """
     user_id = Auth.current_user_id()
-    players = PlayerModel.get_players_by_ability(user_id)
+    players = PlayerModel.get_players_within_distance(user_id)
     players_data = player_schema.dump(players, many=True)
 
     return custom_response(players_data, 200)
-    # return render_template('index.html', title='View all Players', user='Pam', players=ser_players)
 
 @player_api.route('/my_profile', methods=['PATCH'])
 @Auth.auth_required
