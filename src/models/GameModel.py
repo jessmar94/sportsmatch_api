@@ -33,6 +33,7 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
     self.opponent_id = data.get('opponent_id')
     self.game_date = data.get('game_date')
     self.game_time = data.get('game_time')
+    self.confirmed = data.get('confirmed')
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
 

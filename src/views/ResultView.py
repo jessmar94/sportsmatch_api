@@ -25,24 +25,36 @@ def get_all():
         results.append(formatted_result)
     return custom_response(results, 200)
 
-@result_api.route('/', methods=['POST'])
+@result_api.route('/<int:game_id>/new', methods=['POST'])
 @Auth.auth_required
-def create():
+def create(game_id):
       """
       Create Result Function
       """
-      # request similar to http
+      current_user_id = Auth.current_user_id()
       req_data = request.get_json()
-      # # load in format of resultschema
       data = result_schema.load(req_data)
-      print(data)
-      if ResultModel.get_result_by_game(data.get('game_id')):
-            message = {'error': 'Result already provided'}
-            return custom_response(message, 400)
-
+      result = ResultModel.get_result_by_game(game_id)
+      if result:
+          message = {'error': 'Result already provided'}
+          return custom_response(message, 400)
       result = ResultModel(data)
       result.save()
       return custom_response(data, 201)
+
+      # # request similar to http
+      # req_data = request.get_json()
+      # # # load in format of resultschema
+      # data = result_schema.load(req_data)
+      # print(data)
+      # print(data.game_id)
+      # if ResultModel.get_result_by_game(3):
+      #       message = {'error': 'Result already provided'}
+      #       return custom_response(message, 400)
+      #
+      # result = ResultModel(data)
+      # result.save()
+      # return custom_response(data, 201)
 
 @result_api.route('/<int:result_id>/edit', methods=['PATCH'])
 @Auth.auth_required
