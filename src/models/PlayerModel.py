@@ -12,7 +12,9 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   """
   Player Model
   """
-  INITIAL_RANKS = {'Beginner': 50, 'Intermediate': 150, 'Advanced': 250}
+  RANKS = {'Beginner': 100, 'Intermediate': 200, 'Advanced': 300}
+  # ABILITIES = {range(0,100): 'Beginner', range(101,200):'Intermediate', range(201,..): 'Advanced'}
+  # abiltiy = ['Beginner', 'Intermediate', 'Advanced']
 
   # name our table 'players'
   __tablename__ = 'players'
@@ -50,12 +52,21 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.postcode = data.get('postcode')
 
   def set_rank_points(self, ability):
-      return self.INITIAL_RANKS[ability]
+      return self.RANKS[ability]/2
 
   # def update_rank:
 
   def update_winner_rank_points(self):
-      setattr(self, 'rank_points', getattr(self, 'rank_points') + 5)
+      new_points = getattr(self, 'rank_points') + 5
+      current_ability = getattr(self, 'ability')
+
+      if new_points > self.RANKS[current_ability]:
+        if current_ability == 'Beginner':
+         setattr(self, 'ability', 'Intermediate')
+      elif current_ability == 'Intermediate':
+            setattr(self, 'ability', 'Advanced')
+
+      setattr(self, 'rank_points', new_points)
       self.modified_at = datetime.datetime.utcnow()
       db.session.commit()
 
