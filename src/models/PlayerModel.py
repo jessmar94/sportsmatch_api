@@ -52,6 +52,14 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   def set_rank_points(self, ability):
       return self.INITIAL_RANKS[ability]
 
+  # def update_rank:
+
+  def update_rank_points(self):
+      setattr(self, 'rank_points', getattr(self, 'rank_points') + 5)
+      self.modified_at = datetime.datetime.utcnow()
+      db.session.commit()
+
+
   def save(self):
     db.session.add(self)
     db.session.commit()

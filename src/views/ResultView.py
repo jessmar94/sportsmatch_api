@@ -1,4 +1,5 @@
 from flask import g, request, json, Response, Blueprint
+from ..models.PlayerModel import PlayerModel
 from ..models.ResultModel import ResultModel, ResultSchema
 from ..models.GameModel import GameModel, GameSchema
 from ..shared.Authentication import Auth
@@ -36,9 +37,9 @@ def create():
       # # load in format of resultschema
       data = result_schema.load(req_data)
       print(data)
-      if ResultModel.get_result_by_game(data.get('game_id')):
-            message = {'error': 'Result already provided'}
-            return custom_response(message, 400)
+      # if ResultModel.get_result_by_game(data.get('game_id')):
+      #       message = {'error': 'Result already provided'}
+      #       return custom_response(message, 400)
 
       result = ResultModel(data)
       result.save()
@@ -58,9 +59,11 @@ def edit_result(result_id):
         return custom_response({'error': 'result not found'}, 404)
 
     game = GameModel.get_one_game(result.game_id)
-
     if game.organiser_id == current_user_id:
         data = result_schema.load(req_data, partial=True)
+        print(data)
+        player = PlayerModel.get_one_player(data['winner_id'])
+        player.update_rank_points()
         result.update(data)
         data = result_schema.dump(result)
         return custom_response(data, 201)
