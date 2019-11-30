@@ -14,9 +14,7 @@ def get_all():
     """
     current_user_id = Auth.current_user_id()
     host = GameModel.get_game_by_org_id(current_user_id)
-    print(host)
     guest = GameModel.get_game_by_opp_id(current_user_id)
-    print(guest)
     games = [*host, *guest]
     results = []
     for game in games:
@@ -38,9 +36,13 @@ def create(game_id):
       if result:
           message = {'error': 'Result already provided'}
           return custom_response(message, 400)
-      result = ResultModel(data)
-      result.save()
-      return custom_response(data, 201)
+      game = GameModel.get_one_game(game_id)
+      if game.organiser_id == current_user_id:
+          result = ResultModel(data)
+          result.save()
+          return custom_response(data, 201)
+      message = {'error': 'You can only add a result if you are the organiser.'}
+      return custom_response(message, 404)
 
 @result_api.route('/<int:result_id>/edit', methods=['PATCH'])
 @Auth.auth_required
