@@ -3,6 +3,8 @@ from ..models.PlayerModel import PlayerModel, PlayerSchema
 from ..shared.Authentication import Auth
 # from base64 import decodestring
 import base64
+import codecs
+import binascii
 
 player_api = Blueprint('player', __name__)
 player_schema = PlayerSchema()
@@ -39,10 +41,19 @@ def add_image():
   user_id = Auth.current_user_id()
   player = PlayerModel.get_one_player(user_id)
   req_data = request.get_json()
-  decoded_image = base64.b64decode(req_data['image'])
-  binary = bytes(("".join(["{:08b}".format(x) for x in decoded_image])), "utf-8")
-  player.update({'profile_image': binary})
+  st = req_data['image']
 
+  b64 = bin(int.from_bytes(st.encode(), 'big'))
+  e64 = bytes(b64, 'utf-8')
+  player.update({'profile_image': e64})
+
+  player = PlayerModel.get_one_player(user_id)
+  f64 = player.profile_image
+  c64 = int(f64,2)
+  d64 = c64.to_bytes((c64.bit_length() + 7) // 8, 'big').decode()
+
+  print(d64)
+  
   return custom_response('image saved', 200)
 
 @player_api.route('/login', methods=['POST'])
