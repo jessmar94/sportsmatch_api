@@ -22,6 +22,8 @@ def get_all_messages(game_id):
     Get all messages for game
     """
     message = MessageModel.get_all_game_messages(game_id).first()
+    if not message:
+        return custom_response({'message': 'No previous messages, start your conversation now'}, 200)
     messages = MessageModel.get_all_game_messages(game_id)
     data = message_schema.dump(messages, many=True)
     data.append({
