@@ -127,8 +127,34 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
      distance = [country.query_postal_code(new_org_code, new_opp_code), opp_id]
      return distance
 
+  @staticmethod
+  def get_player_photo(id):
+      # player_schema = PlayerSchema()
+      return PlayerModel.query.with_entities(PlayerModel.profile_image).filter_by(id=id).first()
+      # return player_schema.dump(player)
+
   def __repr__(self): # returns a printable representation of the PlayerModel object (returning the id only)
     return '<id {}>'.format(self.id)
+
+class BytesField(fields.Field):
+    """
+    Creating custom field for scheme that serializes base64 to LargeBinary
+    and desrializes LargeBinary to base64
+    """
+    def _deserialize(self, value, attr, data, **kwargs):
+        if value is None:
+            return ""
+        b64 = value
+        binary_string = bin(int.from_bytes(b64.encode(), 'big'))
+        binary = bytes(binary_string, 'utf-8')
+        return binary
+
+    def _serialize(self, value, attr, obj, **kwargs):
+        if value is None:
+            return ""
+        binary_string = int(value,2)
+        base64_string = binary_string.to_bytes((binary_string.bit_length() + 7) // 8, 'big').decode()
+        return base64_string
 
 class PlayerSchema(Schema):
     """
@@ -142,6 +168,7 @@ class PlayerSchema(Schema):
     ability = fields.Str(required=True)
     gender = fields.Str(required=True)
     dob = fields.Date(required=True)
+    profile_image = BytesField(required=False)
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)
     games = fields.Nested(GameSchema, many=True)

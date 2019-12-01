@@ -2,9 +2,9 @@ from flask import request, json, Response, Blueprint, g, render_template
 from ..models.PlayerModel import PlayerModel, PlayerSchema
 from ..shared.Authentication import Auth
 # from base64 import decodestring
-import base64
-import codecs
-import binascii
+# import base64
+# import codecs
+# import binascii
 
 player_api = Blueprint('player', __name__)
 player_schema = PlayerSchema()
@@ -32,27 +32,31 @@ def create():
 
     return custom_response({'jwt_token': token}, 201)
 
-@player_api.route('/image', methods=['POST'])
+@player_api.route('/<int:player_id>/image', methods=['GET'])
 @Auth.auth_required
-def add_image():
+def add_image(player_id):
   """
   Add an image
   """
-  user_id = Auth.current_user_id()
-  player = PlayerModel.get_one_player(user_id)
-  req_data = request.get_json()
-  st = req_data['image']
+  player = PlayerModel.get_player_photo(player_id)
 
-  b64 = bin(int.from_bytes(st.encode(), 'big'))
-  e64 = bytes(b64, 'utf-8')
-  player.update({'profile_image': e64})
+  if not player:
+    return custom_response({'error': 'player not found'}, 404)
 
-  player = PlayerModel.get_one_player(user_id)
-  f64 = player.profile_image
-  c64 = int(f64,2)
-  d64 = c64.to_bytes((c64.bit_length() + 7) // 8, 'big').decode()
+  player_data = player_schema.dump(player)
+  return custom_response(player_data, 200)
 
-  print(d64)
+#   st = req_data['image']
+#   b64 = bin(int.from_bytes(st.encode(), 'big'))
+#   e64 = bytes(b64, 'utf-8')
+#   player.update({'profile_image': e64})
+
+#   player = PlayerModel.get_one_player(user_id)
+#   f64 = player.profile_image
+#   c64 = int(f64,2)
+#   d64 = c64.to_bytes((c64.bit_length() + 7) // 8, 'big').decode()
+
+#   print(d64)
   
   return custom_response('image saved', 200)
 
@@ -88,15 +92,12 @@ def get_a_player(player_id):
     Get a single player
     """
     player = PlayerModel.get_one_player(player_id)
-    player_data = player_schema.dump(player)
 
     if not player:
         return custom_response({'error': 'player not found'}, 404)
 
-
     player_data = player_schema.dump(player)
     return custom_response(player_data, 200)
-
 
 @player_api.route('/my_profile', methods=['GET'])
 @Auth.auth_required
