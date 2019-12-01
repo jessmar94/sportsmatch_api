@@ -21,8 +21,15 @@ def get_all_messages(game_id):
     """
     Get all messages for game
     """
+    message = MessageModel.get_all_game_messages(game_id).first()
     messages = MessageModel.get_all_game_messages(game_id)
     data = message_schema.dump(messages, many=True)
+    data.append({
+        'organiser': message.game.organiser.first_name,
+        'opponent': message.game.opponent.first_name,
+        'organiser_id': message.game.organiser_id,
+        'opponent_id': message.game.opponent_id
+    })
     return custom_response(data, 200)
 
 @message_api.route('/', methods=['POST'])
@@ -32,6 +39,7 @@ def create():
     Create Message
     """
     req_data = request.get_json()
+    print(req_data)
     data = message_schema.load(req_data)
     message = MessageModel(data)
     message.save()
