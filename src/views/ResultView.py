@@ -36,13 +36,14 @@ def show_one_result(result_id):
             data = result_schema.dump(result)
             return custom_response(data, 200)
 
-    return custom_response("boo", 404)
+    message = {'error': 'You must have played in this game to view the result.'}
+    return custom_response(message, 404)
 
 @result_api.route('/<int:game_id>/new', methods=['POST'])
 @Auth.auth_required
 def create(game_id):
       """
-      Create Result Function
+      Create a Result 
       """
       current_user_id = Auth.current_user_id()
       req_data = request.get_json()
