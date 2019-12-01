@@ -5,8 +5,10 @@ from .models import db, bcrypt
 from .models import PlayerModel
 from .models import GameModel
 from .models import ResultModel
+from .models import MessageModel
 from .views.ResultView import result_api as result_blueprint
 from .views.PlayerView import player_api as player_blueprint
+from .views.MessageView import message_api as message_blueprint
 
 from .views.GameView import game_api as game_blueprint # add this line
 
@@ -34,6 +36,8 @@ def create_app(env_name):
     app.register_blueprint(result_blueprint, url_prefix='/api/v1/results')
 
     app.register_blueprint(player_blueprint, url_prefix='/api/v1/players')
+
+    app.register_blueprint(message_blueprint, url_prefix='/api/v1/messages')
 
     @app.route('/', methods=['GET'])
     def index():
