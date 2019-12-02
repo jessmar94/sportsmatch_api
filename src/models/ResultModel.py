@@ -30,6 +30,7 @@ class ResultModel(db.Model): # ResultModel class inherits from db.Model
         self.game_id = data.get('game_id')
         self.winner_id = data.get('winner_id')
         self.loser_id = data.get('loser_id')
+        self.confirmed = data.get('confirmed')
         self.created_at = datetime.datetime.utcnow()
         self.modified_at = datetime.datetime.utcnow()
 
