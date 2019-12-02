@@ -123,6 +123,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   @staticmethod
   def get_one_player(id):
     return PlayerModel.query.with_entities(
+        PlayerModel.id,
         PlayerModel.first_name,
         PlayerModel.last_name,
         PlayerModel.email,
