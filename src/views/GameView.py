@@ -46,6 +46,40 @@ def get_all():
         results.append({**game, **PlayerModel.get_opponent_info(game['organiser_id'])})
     return custom_response(results, 200)
 
+@game_api.route('/opponent', methods=['GET'])
+@Auth.auth_required
+def get_all_opponent_games():
+    """
+    Get Past Confirmed Games related to an opponent
+    """
+    user_id = Auth.current_user_id()
+    games = GameModel.get_game_by_opp_id(user_id)
+    data = game_schema.dump(games, many=True)
+    results = []
+    for game in data:
+      if game['organiser_id'] == user_id:
+        results.append({**game, **PlayerModel.get_opponent_info(game['opponent_id'])})
+      elif game['opponent_id'] == user_id:
+        results.append({**game, **PlayerModel.get_opponent_info(game['organiser_id'])})
+    return custom_response(results, 200)
+
+@game_api.route('/organiser', methods=['GET'])
+@Auth.auth_required
+def get_all_organiser_games():
+    """
+    Get Past Confirmed Games related to an opponent
+    """
+    user_id = Auth.current_user_id()
+    games = GameModel.get_game_by_org_id(user_id)
+    data = game_schema.dump(games, many=True)
+    results = []
+    for game in data:
+      if game['organiser_id'] == user_id:
+        results.append({**game, **PlayerModel.get_opponent_info(game['opponent_id'])})
+      elif game['opponent_id'] == user_id:
+        results.append({**game, **PlayerModel.get_opponent_info(game['organiser_id'])})
+    return custom_response(results, 200)
+
 @game_api.route('/', methods=['POST'])
 @Auth.auth_required
 def create():

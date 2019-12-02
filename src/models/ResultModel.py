@@ -48,11 +48,8 @@ class ResultModel(db.Model): # ResultModel class inherits from db.Model
         db.session.delete(self)
         db.session.commit()
 
-    def organiser(self):
-        return PlayerModel.query.get(self.organiser_id)
-
-    def opponent(self):
-        return PlayerModel.query.get(self.opponent_id)
+    # def organiser(self):
+    #     return PlayerModel.query.get(self.organiser_id)
 
     @staticmethod
     def get_all_results():
