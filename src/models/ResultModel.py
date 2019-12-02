@@ -57,7 +57,7 @@ class ResultModel(db.Model): # ResultModel class inherits from db.Model
 
     @staticmethod
     def get_result_by_game(game_id):
-        return ResultModel.query.filter_by(game_id=game_id)
+        return ResultModel.query.filter_by(game_id=game_id).first()
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -68,8 +68,8 @@ class ResultSchema(Schema):
     """
     id = fields.Int(dump_only=True)
     game_id = fields.Int(required=True)
-    winner_id = fields.Int(required=True)
-    loser_id = fields.Int(required=True)
+    winner_id = fields.Int(required=False)
+    loser_id = fields.Int(required=False)
     confirmed = fields.Boolean(required=True)
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)

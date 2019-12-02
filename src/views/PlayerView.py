@@ -21,14 +21,14 @@ def create():
         return custom_response(message, 400)
 
     player = PlayerModel(data)
-
+    print(player.rank_points)
     player.save()
 
     player_data = player_schema.dump(player)
 
     token = Auth.generate_token(player_data.get('id'))
 
-    return custom_response({'jwt_token': token}, 201)
+    return custom_response({'jwt_token': token, 'user_id': player_data.get('id')}, 201)
 
 @player_api.route('/upload_image', methods=['PATCH'])
 @Auth.auth_required
