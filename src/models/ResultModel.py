@@ -72,8 +72,8 @@ class ResultSchema(Schema):
     """
     id = fields.Int(dump_only=True)
     game_id = fields.Int(required=True)
-    winner_id = fields.Int(required=True)
-    loser_id = fields.Int(required=True)
+    winner_id = fields.Int(required=False)
+    loser_id = fields.Int(required=False)
     confirmed = fields.Boolean(required=True)
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)

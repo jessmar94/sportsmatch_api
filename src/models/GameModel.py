@@ -23,6 +23,7 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
   organiser = db.relationship("PlayerModel", primaryjoin = "GameModel.organiser_id == PlayerModel.id", backref="organiser")
   opponent = db.relationship("PlayerModel", primaryjoin = "GameModel.opponent_id == PlayerModel.id", backref="opponent")
   result = db.relationship("ResultModel", uselist=False, back_populates="game")
+  message = db.relationship("MessageModel", back_populates="game")
 
   # class constructor
   def __init__(self, data): # class constructor used to set the class attributes
