@@ -36,16 +36,9 @@ def get_image(player_id):
   """
   Get an image
   """
-  user_id = Auth.current_user_id()
-  req_data = request.get_json()
-  data = player_schema.load(req_data, partial=True)
-  player = PlayerModel.get_one_player(user_id)
-  player.update(data)
-  # decoded_image = base64.b64decode(req_data['image'])
-  # binary = bytes(("".join(["{:08b}".format(x) for x in decoded_image])), "utf-8")
-  # player.update({'profile_image': binary})
-
-  return custom_response('image saved', 200)
+  player = PlayerModel.get_player_profile_image(player_id)
+  player_data = player_schema.dump(player)
+  return custom_response(player_data, 200)
 
 @player_api.route('/login', methods=['POST'])
 def login():

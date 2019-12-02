@@ -117,8 +117,8 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     return PlayerModel.query.filter_by(email=value).first()
 
   @staticmethod
-  def get_player_by_id(value):
-    return PlayerModel.query.filter_by(id=value).first()
+  def get_player_profile_image(id):
+    return PlayerModel.query.with_entities(PlayerModel.profile_image).filter_by(id=id).first()
 
   @staticmethod
   def get_one_player(id):
@@ -155,7 +155,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
           results = PlayerModel.get_distance_between_postcodes(player.postcode, user_postcode, player.id)
           distances = int(round(results[0]))
           if distances <= 5:
-              answer = PlayerModel.get_player_by_id(results[1])
+              answer = PlayerModel.get_one_player(results[1])
               filtered_array.append(answer)
       return filtered_array
 
@@ -194,7 +194,7 @@ class PlayerSchema(Schema):
     """
     Player Schema
     """
-    
+
     id = fields.Int(dump_only=True)
     first_name = fields.Str(required=True)
     last_name = fields.Str(required=True)
