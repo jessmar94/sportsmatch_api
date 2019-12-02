@@ -30,11 +30,11 @@ def create():
 
     return custom_response({'jwt_token': token, 'user_id': player_data.get('id')}, 201)
 
-@player_api.route('/upload_image', methods=['PATCH'])
+@player_api.route('/<int:player_id>/image', methods=['GET'])
 @Auth.auth_required
-def add_image():
+def get_image(player_id):
   """
-  Add an image
+  Get an image
   """
   user_id = Auth.current_user_id()
   req_data = request.get_json()
