@@ -64,7 +64,6 @@ def create(game_id):
       message = {'error': 'You can only add a result if you are the organiser.'}
       return custom_response(message, 404)
 
-
 @result_api.route('/<int:result_id>/edit', methods=['PATCH'])
 @Auth.auth_required
 def edit_result(result_id):
