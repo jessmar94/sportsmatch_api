@@ -4,6 +4,11 @@ from marshmallow import fields, Schema
 from .ResultModel import ResultSchema
 from sqlalchemy import or_
 
+association_table = db.Table('association', db.metadata,
+    db.Column('games_id', db.Integer, db.ForeignKey('games.id')),
+    db.Column('players_id', db.Integer, db.ForeignKey('players.id'))
+)
+
 class GameModel(db.Model): # GameModel class inherits from db.Model
   """
   Game Model
@@ -20,10 +25,12 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
   game_time = db.Column(db.Time, nullable=False)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
-  organiser = db.relationship("PlayerModel", primaryjoin = "GameModel.organiser_id == PlayerModel.id", backref="organiser")
-  opponent = db.relationship("PlayerModel", primaryjoin = "GameModel.opponent_id == PlayerModel.id", backref="opponent")
+  # organiser = db.relationship("PlayerModel", primaryjoin = "GameModel.organiser_id == PlayerModel.id", backref="organiser")
+  # opponent = db.relationship("PlayerModel", primaryjoin = "GameModel.opponent_id == PlayerModel.id", backref="opponent")
   result = db.relationship("ResultModel", uselist=False, back_populates="game")
   message = db.relationship("MessageModel", back_populates="game")
+  # New Attempt for Games
+  players = db.relationship("PlayerModel", secondary=association_table)
 
   # class constructor
   def __init__(self, data): # class constructor used to set the class attributes

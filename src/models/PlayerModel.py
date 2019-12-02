@@ -9,6 +9,12 @@ from .MessageModel import MessageSchema
 import pgeocode
 # import from sqlalchemy import and_
 
+# New db attempt
+# association_table = db.Table('association', db.metadata,
+#     db.Column('players_id', db.Integer, db.ForeignKey('players.id')),
+#     db.Column('games_id', db.Integer, db.ForeignKey('games.id'))
+# )
+
 class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   """
   Player Model
@@ -33,6 +39,8 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   profile_image = db.Column(db.LargeBinary, nullable=True)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
+  # New attempt for Games
+  # games = db.relationship("GameModel", secondary=association_table)
 
   # class constructor to set class attributes
   def __init__(self, data):
@@ -194,7 +202,7 @@ class PlayerSchema(Schema):
     """
     Player Schema
     """
-    
+
     id = fields.Int(dump_only=True)
     first_name = fields.Str(required=True)
     last_name = fields.Str(required=True)

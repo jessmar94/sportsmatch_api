@@ -45,7 +45,6 @@ def get_all_organiser():
         results.append(formatted_result[0])
     return custom_response(results, 200)
 
-
 @result_api.route('/<int:result_id>', methods=['GET'])
 @Auth.auth_required
 def show_one_result(result_id):
@@ -63,7 +62,7 @@ def show_one_result(result_id):
 @Auth.auth_required
 def create(game_id):
       """
-      Create a Result 
+      Create a Result
       """
       current_user_id = Auth.current_user_id()
       req_data = request.get_json()
