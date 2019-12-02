@@ -143,30 +143,40 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     return player_schema.dump(player)
 
   @staticmethod
-  def get_players_by_ability(value):
+  def get_players_by_ability(id, ability):
+    # user_schema = PlayerSchema()
+    # user = PlayerModel.query.filter_by(id=value).first()
+    # serialized_user = user_schema.dump(user)
+    # user_ability = serialized_user['ability']
+    # user_postcode = serialized_user['postcode']
+    # # players = PlayerModel.get_all_players()
+    return PlayerModel.query.filter(PlayerModel.ability==ability, PlayerModel.id != value)
+    # return players
+
+  @staticmethod
+  def get_filtered_players(id, ability, distance):
     user_schema = PlayerSchema()
-    user = PlayerModel.query.filter_by(id=value).first()
+    user = PlayerModel.query.filter_by(id=id).first()
     serialized_user = user_schema.dump(user)
-    user_ability = serialized_user['ability']
-    user_postcode = serialized_user['postcode']
-    # players = PlayerModel.get_all_players()
-    players = PlayerModel.query.filter(PlayerModel.ability==user_ability, PlayerModel.id != value)
-    return players
+    # user_postcode = serialized_user['postcode']
+    players = PlayerModel.get_players_by_ability(id, ability)
+    return PlayerModel.get_players_within_distance(players, serialized_user, distance)
 
 
   @staticmethod
-  def get_players_within_distance(value):
-      user_schema = PlayerSchema()
-      user = PlayerModel.query.filter_by(id=value).first()
-      serialized_user = user_schema.dump(user)
-      user_ability = serialized_user['ability']
-      user_postcode = serialized_user['postcode']
-      players = PlayerModel.get_players_by_ability(value)
+  def get_players_within_distance(players, user, distance):
+      # user_schema = PlayerSchema()
+      # user = PlayerModel.query.filter_by(id=value).first()
+      # serialized_user = user_schema.dump(user)
+      # user_ability = serialized_user['ability']\
+      id = user['id']
+      user_postcode = user['postcode']
+      # players = PlayerModel.get_players_by_ability(value)
       filtered_array = []
       for player in players:
           results = PlayerModel.get_distance_between_postcodes(player.postcode, user_postcode, player.id)
           distances = int(round(results[0]))
-          if distances <= 5:
+          if distances <= distance:
               answer = PlayerModel.get_one_player(results[1])
               filtered_array.append(answer)
       return filtered_array
