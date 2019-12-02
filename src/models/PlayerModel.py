@@ -31,6 +31,8 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   rank_points = db.Column(db.Integer, nullable=False)
   dob = db.Column(db.Date, nullable=False)
   profile_image = db.Column(db.LargeBinary, nullable=True)
+  bio = db.Column(db.String(200), nullable=True)
+  sport = db.Column(db.String(30), nullable=True)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
 
@@ -47,6 +49,8 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.ability = data.get('ability')
     self.rank_points = self.set_rank_points(data.get('ability'))
     self.dob = data.get('dob')
+    self.bio = data.get('bio')
+    self.sport = data.get('sport') or "Tennis"
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
     self.profile_image = data.get('profile_image')
@@ -54,8 +58,6 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
 
   def set_rank_points(self, ability):
       return self.RANKS[ability]/2
-
-  # def update_rank:
 
   def update_winner_rank_points(self):
       new_points = getattr(self, 'rank_points') + 5
@@ -129,7 +131,9 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
         PlayerModel.email,
         PlayerModel.dob,
         PlayerModel.ability,
-        PlayerModel.gender
+        PlayerModel.gender,
+        PlayerModel.bio,
+        PlayerModel.sport
     ).filter_by(id=id).first()
 
   @staticmethod
@@ -143,16 +147,16 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     return player_schema.dump(player)
 
   @staticmethod
-  def get_filtered_players(id, ability, distance):
+  def get_filtered_players(id, ability, distance, sport):
     user_schema = PlayerSchema()
     user = PlayerModel.query.filter_by(id=id).first()
     serialized_user = user_schema.dump(user)
-    players = PlayerModel.get_players_by_ability(id, ability)
+    players = PlayerModel.get_players_by_ability_and_sport(id, ability, sport)
     return PlayerModel.get_players_within_distance(players, serialized_user, distance)
 
   @staticmethod
-  def get_players_by_ability(id, ability):
-    return PlayerModel.query.filter(PlayerModel.ability==ability, PlayerModel.id != id)
+  def get_players_by_ability_and_sport(id, ability, sport):
+    return PlayerModel.query.filter(PlayerModel.ability==ability, PlayerModel.sport==sport, PlayerModel.id != id)
 
   @staticmethod
   def get_players_within_distance(players, user, distance):
@@ -209,6 +213,8 @@ class PlayerSchema(Schema):
     gender = fields.Str(required=True)
     dob = fields.Date(required=True)
     profile_image = BytesField(required=False)
+    bio = fields.Str(required=False)
+    sport = fields.Str(required=False)
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)
     games = fields.Nested(GameSchema, many=True)

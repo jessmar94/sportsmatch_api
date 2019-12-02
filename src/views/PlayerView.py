@@ -100,7 +100,7 @@ def get_all_players():
     View all filtered player's
     """
     user_id = Auth.current_user_id()
-    players = PlayerModel.get_filtered_players(user_id, request.headers.get('ability'), request.headers.get('distance'))
+    players = PlayerModel.get_filtered_players(user_id, request.headers.get('ability'), request.headers.get('distance'), request.headers.get('sport'))
     players_data = player_schema.dump(players, many=True)
 
     return custom_response(players_data, 200)
