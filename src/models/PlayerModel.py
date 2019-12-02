@@ -156,15 +156,12 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
 
   @staticmethod
   def get_players_within_distance(players, user, distance):
-      id = user['id']
       user_postcode = user['postcode']
       filtered_array = []
       for player in players:
-          results = PlayerModel.get_distance_between_postcodes(player.postcode, user_postcode, player.id)
-          distances = int(round(results[0]))
-          if distances <= int(distance):
-              answer = PlayerModel.get_one_player(results[1])
-              filtered_array.append(answer)
+          distances_between_players = int(round(PlayerModel.get_distance_between_postcodes(player.postcode, user_postcode, player.id)))
+          if distances_between_players <= int(distance):
+              filtered_array.append(player)
       return filtered_array
 
   @staticmethod
@@ -172,8 +169,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
      new_org_code = org_code[:-3].upper()
      new_opp_code = opp_code[:-3].upper()
      country = pgeocode.GeoDistance('gb')
-     distance = [country.query_postal_code(new_org_code, new_opp_code), opp_id]
-     return distance
+     return country.query_postal_code(new_org_code, new_opp_code)
 
   def __repr__(self): # returns a printable representation of the PlayerModel object (returning the id only)
     return '<id {}>'.format(self.id)
