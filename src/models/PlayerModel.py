@@ -5,7 +5,6 @@ from . import db # import db instance from models/__init__.py
 from ..app import bcrypt
 from .GameModel import GameSchema
 from .ResultModel import ResultSchema
-import base64
 import pgeocode
 # import from sqlalchemy import and_
 
@@ -140,16 +139,16 @@ class BytesField(fields.Field):
     def _deserialize(self, value, attr, data, **kwargs):
         if value is None:
             return ""
-        decoded_image = base64.b64decode(value)
-        binary = bytes(("".join(["{:08b}".format(x) for x in decoded_image])), "utf-8")
-        print("Hello*?*?*?*?*?*?*?*?*?*?*?")
+        binary_string = bin(int.from_bytes(value.encode(), 'big'))
+        binary = bytes(binary_string, 'utf-8')
         return binary
 
     def _serialize(self, value, attr, obj, **kwargs):
         if value is None:
             return ""
-        print("Hello again ")
-        return value
+        binary_string = int(value,2)
+        base64_string = binary_string.to_bytes((binary_string.bit_length() + 7) // 8, 'big').decode()
+        return base64_string
 
 class PlayerSchema(Schema):
     """
