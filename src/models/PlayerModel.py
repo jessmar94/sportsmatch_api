@@ -154,6 +154,7 @@ class PlayerSchema(Schema):
     """
     Player Schema
     """
+    
     id = fields.Int(dump_only=True)
     first_name = fields.Str(required=True)
     last_name = fields.Str(required=True)
