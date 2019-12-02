@@ -7,16 +7,15 @@ from ..shared.Authentication import Auth
 result_api = Blueprint('results', __name__)
 result_schema = ResultSchema()
 
-@result_api.route('/', methods=['GET'])
+@result_api.route('/opponent', methods=['GET'])
 @Auth.auth_required
-def get_all():
+def get_all_opponent():
     """
-    Logged in player can view all results where they are the organiser or opponent
+    Logged in player can view all results where they are the opponent
     """
     current_user_id = Auth.current_user_id()
-    host = GameModel.get_game_by_org_id(current_user_id)
     guest = GameModel.get_game_by_opp_id(current_user_id)
-    games = [*host, *guest]
+    games = [*guest]
     results = []
     for game in games:
         result = ResultModel.get_all_results(game.id)
@@ -26,6 +25,26 @@ def get_all():
 
         results.append(formatted_result[0])
     return custom_response(results, 200)
+
+@result_api.route('/organiser', methods=['GET'])
+@Auth.auth_required
+def get_all_organiser():
+    """
+    Logged in player can view all results where they are the organiser
+    """
+    current_user_id = Auth.current_user_id()
+    host = GameModel.get_game_by_org_id(current_user_id)
+    games = [*host]
+    results = []
+    for game in games:
+        result = ResultModel.get_all_results(game.id)
+        formatted_result = result_schema.dump(result, many=True)
+        if not formatted_result:
+            continue
+
+        results.append(formatted_result[0])
+    return custom_response(results, 200)
+
 
 @result_api.route('/<int:result_id>', methods=['GET'])
 @Auth.auth_required
