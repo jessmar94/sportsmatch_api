@@ -162,7 +162,7 @@ class PlayerSchema(Schema):
     ability = fields.Str(required=True)
     gender = fields.Str(required=True)
     dob = fields.Date(required=True)
-    profile_image = BytesField(required=True)
+    profile_image = BytesField(required=False)
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)
     games = fields.Nested(GameSchema, many=True)
