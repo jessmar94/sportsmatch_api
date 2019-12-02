@@ -100,15 +100,15 @@ def edit_game(game_id):
         return custom_response({'error': 'permission denied'}, 400)
 
 
-@game_api.route('/<int:game_id>', methods=['DELETE'])
-@Auth.auth_required
-def delete_game(game_id):
-    user_id = Auth.current_user_id()
-    game = GameModel.get_one_game(game_id)
-    data = game_schema.dump(game)
-    if not game:
-        return custom_response({'error': 'game not found'}, 404)
-    if data.get('organiser_id') == user_id:
-        return custom_response({'error': 'permission denied'}, 400)
-    game.delete()
-    return custom_response({'message': 'deleted'}, 204)
+# @game_api.route('/<int:game_id>', methods=['DELETE'])
+# @Auth.auth_required
+# def delete_game(game_id):
+#     user_id = Auth.current_user_id()
+#     game = GameModel.get_one_game(game_id)
+#     data = game_schema.dump(game)
+#     if not game:
+#         return custom_response({'error': 'game not found'}, 404)
+#     if data.get('organiser_id') == user_id:
+#         return custom_response({'error': 'permission denied'}, 400)
+#     game.delete()
+#     return custom_response({'message': 'deleted'}, 204)
