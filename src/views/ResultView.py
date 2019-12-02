@@ -6,6 +6,7 @@ from ..shared.Authentication import Auth
 
 result_api = Blueprint('results', __name__)
 result_schema = ResultSchema()
+game_schema = GameSchema()
 
 @result_api.route('/opponent', methods=['GET'])
 @Auth.auth_required
@@ -17,14 +18,25 @@ def get_all_opponent():
     guest = GameModel.get_game_by_opp_id(current_user_id)
     games = [*guest]
     results = []
+    game_results = []
     for game in games:
         result = ResultModel.get_all_results(game.id)
+        game = GameModel.get_games_by_id(game.id)
         formatted_result = result_schema.dump(result, many=True)
+        formatted_game_info = game_schema.dump(game, many=True)
         if not formatted_result:
             continue
 
+        if not formatted_game_info:
+            continue
+
         results.append(formatted_result[0])
-    return custom_response(results, 200)
+        partial_results = results[0]
+        results.append(formatted_game_info[0])
+        partial_games = results[1]
+        final_results = {**partial_results, **partial_games}
+        game_results.append(final_results)
+    return custom_response(game_results, 200)
 
 @result_api.route('/organiser', methods=['GET'])
 @Auth.auth_required
@@ -36,14 +48,25 @@ def get_all_organiser():
     host = GameModel.get_game_by_org_id(current_user_id)
     games = [*host]
     results = []
+    game_results = []
     for game in games:
         result = ResultModel.get_all_results(game.id)
+        game = GameModel.get_games_by_id(game.id)
         formatted_result = result_schema.dump(result, many=True)
+        formatted_game_info = game_schema.dump(game, many=True)
         if not formatted_result:
             continue
 
+        if not formatted_game_info:
+            continue
+
         results.append(formatted_result[0])
-    return custom_response(results, 200)
+        partial_results = results[0]
+        results.append(formatted_game_info[0])
+        partial_games = results[1]
+        final_results = {**partial_results, **partial_games}
+        game_results.append(final_results)
+    return custom_response(game_results, 200)
 
 @result_api.route('/<int:result_id>', methods=['GET'])
 @Auth.auth_required
