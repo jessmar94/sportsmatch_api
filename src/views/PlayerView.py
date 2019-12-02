@@ -95,18 +95,6 @@ def get_current_user():
 
 @player_api.route('/', methods=['GET'])
 @Auth.auth_required
-def get_all_by_ability():
-    """
-    View all player's with same ability as logged in player
-    """
-    user_id = Auth.current_user_id()
-    players = PlayerModel.get_players_within_distance(user_id)
-    players_data = player_schema.dump(players, many=True)
-
-    return custom_response(players_data, 200)
-
-@player_api.route('/', methods=['GET'])
-@Auth.auth_required
 def get_all_players():
     """
     View all filtered player's
