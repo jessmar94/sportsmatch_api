@@ -58,7 +58,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
     self.profile_image = data.get('profile_image')
-    self.postcode = data.get('postcode')
+    self.postcode = data.get('postcode').upper().replace(' ', '')
 
   def set_rank_points(self, ability):
       return self.RANKS[ability]/2
