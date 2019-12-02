@@ -22,7 +22,7 @@ flask-cors = "*"
 pytest-cov = "*"
 pytest = "*"
 gunicorn = "*"
+marshmallow-sqlalchemy = "*"
 pgeocode = "*"
-
 [requires]
 python_version = "3.7"

@@ -170,10 +170,31 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   def __repr__(self): # returns a printable representation of the PlayerModel object (returning the id only)
     return '<id {}>'.format(self.id)
 
+class BytesField(fields.Field):
+    """
+    Creating custom field for scheme that serializes base64 to LargeBinary
+    and desrializes LargeBinary to base64
+    """
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        if value is None:
+            return ""
+        binary_string = bin(int.from_bytes(value.encode(), 'big'))
+        binary = bytes(binary_string, 'utf-8')
+        return binary
+
+    def _serialize(self, value, attr, obj, **kwargs):
+        if value is None:
+            return ""
+        binary_string = int(value,2)
+        base64_string = binary_string.to_bytes((binary_string.bit_length() + 7) // 8, 'big').decode()
+        return base64_string
+
 class PlayerSchema(Schema):
     """
     Player Schema
     """
+    
     id = fields.Int(dump_only=True)
     first_name = fields.Str(required=True)
     last_name = fields.Str(required=True)
@@ -183,6 +204,7 @@ class PlayerSchema(Schema):
     rank_points = fields.Int(required=False)
     gender = fields.Str(required=True)
     dob = fields.Date(required=True)
+    profile_image = BytesField(required=False)
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)
     games = fields.Nested(GameSchema, many=True)
