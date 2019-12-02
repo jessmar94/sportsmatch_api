@@ -121,7 +121,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     return PlayerModel.query.with_entities(PlayerModel.profile_image).filter_by(id=id).first()
 
   @staticmethod
-  def get_one_player(id):
+  def get_player_info(id):
     return PlayerModel.query.with_entities(
         PlayerModel.id,
         PlayerModel.first_name,
@@ -131,6 +131,10 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
         PlayerModel.ability,
         PlayerModel.gender
     ).filter_by(id=id).first()
+
+  @staticmethod
+  def get_one_player(id):
+    return PlayerModel.query.get(id)
 
   @staticmethod
   def get_opponent_info(id):

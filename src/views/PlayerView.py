@@ -71,7 +71,7 @@ def get_a_player(player_id):
     """
     Get a single player
     """
-    player = PlayerModel.get_one_player(player_id)
+    player = PlayerModel.get_player_info(player_id)
     player_data = player_schema.dump(player)
 
     if not player:
