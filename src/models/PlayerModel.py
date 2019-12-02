@@ -5,6 +5,7 @@ from . import db # import db instance from models/__init__.py
 from ..app import bcrypt
 from .GameModel import GameSchema
 from .ResultModel import ResultSchema
+from .MessageModel import MessageSchema
 import pgeocode
 # import from sqlalchemy import and_
 

@@ -28,7 +28,7 @@ def create():
 
     token = Auth.generate_token(player_data.get('id'))
 
-    return custom_response({'jwt_token': token}, 201)
+    return custom_response({'jwt_token': token, 'user_id': player_data.get('id')}, 201)
 
 @player_api.route('/image', methods=['POST'])
 @Auth.auth_required
