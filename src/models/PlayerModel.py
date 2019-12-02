@@ -122,7 +122,14 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
 
   @staticmethod
   def get_one_player(id):
-    return PlayerModel.query.get(id)
+    return PlayerModel.query.with_entities(
+        PlayerModel.first_name,
+        PlayerModel.last_name,
+        PlayerModel.email,
+        PlayerModel.dob,
+        PlayerModel.ability,
+        PlayerModel.gender
+    ).filter_by(id=id).first()
 
   @staticmethod
   def get_opponent_info(id):
@@ -199,7 +206,7 @@ class PlayerSchema(Schema):
     first_name = fields.Str(required=True)
     last_name = fields.Str(required=True)
     email = fields.Email(required=True)
-    password = fields.Str(required=True)
+    password = fields.Str(required=True, load_only=True)
     ability = fields.Str(required=True)
     rank_points = fields.Int(required=False)
     gender = fields.Str(required=True)
