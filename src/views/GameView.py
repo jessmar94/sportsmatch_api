@@ -108,7 +108,7 @@ def delete_game(game_id):
     data = game_schema.dump(game)
     if not game:
         return custom_response({'error': 'game not found'}, 404)
-    if data.get('organiser_id') != user_id:
+    if data.get('organiser_id') == user_id:
         return custom_response({'error': 'permission denied'}, 400)
     game.delete()
     return custom_response({'message': 'deleted'}, 204)
