@@ -15,7 +15,7 @@ class ResultModel(db.Model): # ResultModel class inherits from db.Model
     game_id = db.Column(db.Integer, db.ForeignKey('games.id'), nullable=False, unique=True)
     winner_id = db.Column(db.Integer, db.ForeignKey('players.id'))
     loser_id = db.Column(db.Integer, db.ForeignKey('players.id'))
-    confirmed = db.Column(db.Boolean, default=False, nullable=False)
+    result_confirmed = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime)
     modified_at = db.Column(db.DateTime)
     winner = db.relationship("PlayerModel", primaryjoin = "ResultModel.winner_id == PlayerModel.id", backref="winner")
@@ -30,7 +30,7 @@ class ResultModel(db.Model): # ResultModel class inherits from db.Model
         self.game_id = data.get('game_id')
         self.winner_id = data.get('winner_id')
         self.loser_id = data.get('loser_id')
-        self.confirmed = data.get('confirmed')
+        self.result_confirmed = data.get('confirmed')
         self.created_at = datetime.datetime.utcnow()
         self.modified_at = datetime.datetime.utcnow()
 
@@ -47,9 +47,6 @@ class ResultModel(db.Model): # ResultModel class inherits from db.Model
     def delete(self):
         db.session.delete(self)
         db.session.commit()
-
-    # def organiser(self):
-    #     return PlayerModel.query.get(self.organiser_id)
 
     @staticmethod
     def get_all_results():
@@ -79,6 +76,6 @@ class ResultSchema(Schema):
     game_id = fields.Int(required=True)
     winner_id = fields.Int(required=False)
     loser_id = fields.Int(required=False)
-    confirmed = fields.Boolean(required=True)
+    result_confirmed = fields.Boolean(required=True)
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)

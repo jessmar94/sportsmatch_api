@@ -92,19 +92,19 @@ class ResultsTest(unittest.TestCase):
           "game_id": game1_id,
           "winner_id": player2_id,
           "loser_id": player1_id,
-          "confirmed": "False"
+          "result_confirmed": "False"
         }
         self.result_2 = {
           "game_id": game2_id,
           "winner_id": player1_id,
           "loser_id": player2_id,
-          "confirmed": "False"
+          "result_confirmed": "False"
         }
         self.result_3 = {
           "game_id": game3_id,
           "winner_id": player1_id,
           "loser_id": player2_id,
-          "confirmed": "False"
+          "result_confirmed": "False"
         }
 
     # def test_create_a_result(self):

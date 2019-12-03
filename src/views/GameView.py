@@ -72,8 +72,6 @@ def get_all_opponent_games():
 
         if len(formatted_result) == 0:
             game_results.append(formatted_game_info[0])
-            print("RESULTS")
-            print(game_results)
         elif len(formatted_result) != 0:
             results.append(formatted_result[0])
             partial_results = results[0]
@@ -82,14 +80,6 @@ def get_all_opponent_games():
             final_results = {**partial_results, **partial_games}
             game_results.append(final_results)
     return custom_response(game_results, 200)
-    # data = game_schema.dump(games, many=True)
-    # results = []
-    # for game in data:
-    #   if game['organiser_id'] == user_id:
-    #     results.append({**game, **PlayerModel.get_opponent_info(game['opponent_id'])})
-    #   elif game['opponent_id'] == user_id:
-    #     results.append({**game, **PlayerModel.get_opponent_info(game['organiser_id'])})
-    # return custom_response(results, 200)
 
 @game_api.route('/organiser', methods=['GET'])
 @Auth.auth_required
@@ -109,13 +99,6 @@ def get_all_organiser_games():
         formatted_game_info = game_schema.dump(game, many=True)
         if len(formatted_result) == 0:
             game_results.append(formatted_game_info[0])
-            print("RESULTS")
-            print(game_results)
-            # partial_games = results[0]
-            # print("RESULTS")
-            # print(results)
-            # final_results = {**partial_games}
-            # game_results.append(results)
         elif len(formatted_result) != 0:
             results.append(formatted_result[0])
             partial_results = results[0]
@@ -129,16 +112,6 @@ def get_all_organiser_games():
         # if not formatted_game_info:
         #     continue
     return custom_response(game_results, 200)
-    # user_id = Auth.current_user_id()
-    # games = GameModel.get_game_by_org_id(user_id)
-    # data = game_schema.dump(games, many=True)
-    # results = []
-    # for game in data:
-    #   if game['organiser_id'] == user_id:
-    #     results.append({**game, **PlayerModel.get_opponent_info(game['opponent_id'])})
-    #   elif game['opponent_id'] == user_id:
-    #     results.append({**game, **PlayerModel.get_opponent_info(game['organiser_id'])})
-    # return custom_response(results, 200)
 
 @game_api.route('/', methods=['POST'])
 @Auth.auth_required
