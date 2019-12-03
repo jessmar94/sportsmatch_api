@@ -89,8 +89,6 @@ def get_all_organiser_games():
     current_user_id = Auth.current_user_id()
     host = GameModel.get_game_by_org_id(current_user_id)
     games = [*host]
-    print("***************")
-    print(games)
     results = []
     game_results = []
     for game in games:
