@@ -30,22 +30,15 @@ def create():
 
     return custom_response({'jwt_token': token, 'user_id': player_data.get('id')}, 201)
 
-@player_api.route('/upload_image', methods=['PATCH'])
+@player_api.route('/<int:player_id>/image', methods=['GET'])
 @Auth.auth_required
-def add_image():
+def get_image(player_id):
   """
-  Add an image
+  Get an image
   """
-  user_id = Auth.current_user_id()
-  req_data = request.get_json()
-  data = player_schema.load(req_data, partial=True)
-  player = PlayerModel.get_one_player(user_id)
-  player.update(data)
-  # decoded_image = base64.b64decode(req_data['image'])
-  # binary = bytes(("".join(["{:08b}".format(x) for x in decoded_image])), "utf-8")
-  # player.update({'profile_image': binary})
-
-  return custom_response('image saved', 200)
+  player = PlayerModel.get_player_profile_image(player_id)
+  player_data = player_schema.dump(player)
+  return custom_response(player_data, 200)
 
 @player_api.route('/login', methods=['POST'])
 def login():
@@ -78,7 +71,7 @@ def get_a_player(player_id):
     """
     Get a single player
     """
-    player = PlayerModel.get_one_player(player_id)
+    player = PlayerModel.get_player_info(player_id)
     player_data = player_schema.dump(player)
 
     if not player:
@@ -87,7 +80,6 @@ def get_a_player(player_id):
 
     player_data = player_schema.dump(player)
     return custom_response(player_data, 200)
-
 
 @player_api.route('/my_profile', methods=['GET'])
 @Auth.auth_required
@@ -103,12 +95,12 @@ def get_current_user():
 
 @player_api.route('/', methods=['GET'])
 @Auth.auth_required
-def get_all_by_ability():
+def get_all_players():
     """
-    View all player's with same ability as logged in player
+    View all filtered player's
     """
     user_id = Auth.current_user_id()
-    players = PlayerModel.get_players_within_distance(user_id)
+    players = PlayerModel.get_filtered_players(user_id, request.headers.get('ability'), request.headers.get('distance'))
     players_data = player_schema.dump(players, many=True)
 
     return custom_response(players_data, 200)

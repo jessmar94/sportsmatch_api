@@ -21,7 +21,8 @@ class PlayersTest(unittest.TestCase):
       "gender": "M",
       "dob": "1990-01-01",
       "ability": "Beginner",
-      "postcode": "n169np"
+      "postcode": "n169np",
+      "rank_points": 50
     }
 
     with self.app.app_context():
@@ -138,7 +139,7 @@ class PlayersTest(unittest.TestCase):
     res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player))
     self.assertEqual(res.status_code, 201)
     api_token = json.loads(res.data).get('jwt_token')
-    res = self.client().get('api/v1/players/', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    res = self.client().get('api/v1/players/', headers={'Content-Type': 'application/json', 'ability': 'Beginner', 'distance': '5', 'api-token': api_token})
     json_data = json.loads(res.data)
     self.assertEqual(res.status_code, 200)
 
@@ -166,7 +167,7 @@ class PlayersTest(unittest.TestCase):
     res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player))
     self.assertEqual(res.status_code, 201)
     api_token = json.loads(res.data).get('jwt_token')
-    res = self.client().get('api/v1/players/', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    res = self.client().get('api/v1/players/', headers={'Content-Type': 'application/json', 'ability': 'Beginner', 'distance': '5', 'api-token': api_token})
     json_data = json.loads(res.data)
     self.assertEqual(res.status_code, 200)
     self.assertEqual(json_data[0].get('first_name'), 'Pam')

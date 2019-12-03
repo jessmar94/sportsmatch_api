@@ -31,6 +31,8 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   rank_points = db.Column(db.Integer, nullable=False)
   dob = db.Column(db.Date, nullable=False)
   profile_image = db.Column(db.LargeBinary, nullable=True)
+  bio = db.Column(db.String(200), nullable=True)
+  sport = db.Column(db.String(30), nullable=True)
   created_at = db.Column(db.DateTime)
   modified_at = db.Column(db.DateTime)
 
@@ -47,6 +49,8 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.ability = data.get('ability')
     self.rank_points = self.set_rank_points(data.get('ability'))
     self.dob = data.get('dob')
+    self.bio = data.get('bio')
+    self.sport = data.get('sport') or "Tennis"
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
     self.profile_image = data.get('profile_image')
@@ -54,8 +58,6 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
 
   def set_rank_points(self, ability):
       return self.RANKS[ability]/2
-
-  # def update_rank:
 
   def update_winner_rank_points(self):
       new_points = getattr(self, 'rank_points') + 5
@@ -117,8 +119,22 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     return PlayerModel.query.filter_by(email=value).first()
 
   @staticmethod
-  def get_player_by_id(value):
-    return PlayerModel.query.filter_by(id=value).first()
+  def get_player_profile_image(id):
+    return PlayerModel.query.with_entities(PlayerModel.profile_image).filter_by(id=id).first()
+
+  @staticmethod
+  def get_player_info(id):
+    return PlayerModel.query.with_entities(
+        PlayerModel.id,
+        PlayerModel.first_name,
+        PlayerModel.last_name,
+        PlayerModel.email,
+        PlayerModel.dob,
+        PlayerModel.ability,
+        PlayerModel.gender,
+        PlayerModel.bio,
+        PlayerModel.sport
+    ).filter_by(id=id).first()
 
   @staticmethod
   def get_one_player(id):
@@ -131,32 +147,26 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     return player_schema.dump(player)
 
   @staticmethod
-  def get_players_by_ability(value):
+  def get_filtered_players(id, ability, distance):
     user_schema = PlayerSchema()
-    user = PlayerModel.query.filter_by(id=value).first()
+    user = PlayerModel.query.filter_by(id=id).first()
+    print("---------")
     serialized_user = user_schema.dump(user)
-    user_ability = serialized_user['ability']
-    user_postcode = serialized_user['postcode']
-    # players = PlayerModel.get_all_players()
-    players = PlayerModel.query.filter(PlayerModel.ability==user_ability, PlayerModel.id != value)
-    return players
-
+    players = PlayerModel.get_players_by_ability(id, ability, serialized_user['sport'])
+    return PlayerModel.get_players_within_distance(players, serialized_user, distance)
 
   @staticmethod
-  def get_players_within_distance(value):
-      user_schema = PlayerSchema()
-      user = PlayerModel.query.filter_by(id=value).first()
-      serialized_user = user_schema.dump(user)
-      user_ability = serialized_user['ability']
-      user_postcode = serialized_user['postcode']
-      players = PlayerModel.get_players_by_ability(value)
+  def get_players_by_ability(id, ability, sport):
+    return PlayerModel.query.filter(PlayerModel.ability==ability, PlayerModel.id != id, PlayerModel.sport==sport)
+
+  @staticmethod
+  def get_players_within_distance(players, user, distance):
+      user_postcode = user['postcode']
       filtered_array = []
       for player in players:
-          results = PlayerModel.get_distance_between_postcodes(player.postcode, user_postcode, player.id)
-          distances = int(round(results[0]))
-          if distances <= 5:
-              answer = PlayerModel.get_player_by_id(results[1])
-              filtered_array.append(answer)
+          distances_between_players = int(round(PlayerModel.get_distance_between_postcodes(player.postcode, user_postcode, player.id)))
+          if distances_between_players <= int(distance):
+              filtered_array.append(player)
       return filtered_array
 
   @staticmethod
@@ -164,8 +174,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
      new_org_code = org_code[:-3].upper()
      new_opp_code = opp_code[:-3].upper()
      country = pgeocode.GeoDistance('gb')
-     distance = [country.query_postal_code(new_org_code, new_opp_code), opp_id]
-     return distance
+     return country.query_postal_code(new_org_code, new_opp_code)
 
   def __repr__(self): # returns a printable representation of the PlayerModel object (returning the id only)
     return '<id {}>'.format(self.id)
@@ -199,12 +208,14 @@ class PlayerSchema(Schema):
     first_name = fields.Str(required=True)
     last_name = fields.Str(required=True)
     email = fields.Email(required=True)
-    password = fields.Str(required=True)
+    password = fields.Str(required=True, load_only=True)
     ability = fields.Str(required=True)
     rank_points = fields.Int(required=False)
     gender = fields.Str(required=True)
     dob = fields.Date(required=True)
     profile_image = BytesField(required=False)
+    bio = fields.Str(required=False)
+    sport = fields.Str(required=False)
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)
     games = fields.Nested(GameSchema, many=True)
