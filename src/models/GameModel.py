@@ -89,6 +89,6 @@ class GameSchema(Schema):
   opponent_id = fields.Int(required=True)
   game_date = fields.Date(required=True)
   game_time = fields.Time(required=True)
-  status = fields.Boolean(required=True)
+  status = fields.String(required=True)
   created_at = fields.DateTime(dump_only=True)
   modified_at = fields.DateTime(dump_only=True)

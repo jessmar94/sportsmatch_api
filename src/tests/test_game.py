@@ -64,7 +64,7 @@ class GamesTest(unittest.TestCase):
     self.game = {
       "organiser_id": player_1_id,
       "opponent_id": player_2_id,
-      "confirmed": "false",
+      "status": "pending",
       "game_date": "2019-11-01",
       "game_time": "17:00:00"
     }
@@ -72,7 +72,7 @@ class GamesTest(unittest.TestCase):
     self.game_2 = {
       "organiser_id": player_2_id,
       "opponent_id": player_1_id,
-      "confirmed": "false",
+      "status": "pending",
       "game_date": "2019-11-01",
       "game_time": "11:00:00"
     }
