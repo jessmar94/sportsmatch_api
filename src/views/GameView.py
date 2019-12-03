@@ -64,6 +64,8 @@ def get_all_opponent_games():
         game = GameModel.get_games_by_id(game.id)
         formatted_result = result_schema.dump(result, many=True)
         formatted_game_info = game_schema.dump(game, many=True)
+        organiser = PlayerModel.get_opponent_info(formatted_game_info[0]['organiser_id'])
+        # print(opponent)
         # if not formatted_result:
         #     continue
         #
@@ -71,10 +73,10 @@ def get_all_opponent_games():
         #     continue
 
         if len(formatted_result) == 0:
-            game_results.append(formatted_game_info[0])
+            final_results = {**formatted_game_info[0], **organiser}
+            game_results.append(final_results)
         elif len(formatted_result) != 0:
-            results.append(formatted_result[0])
-            final_results = {**formatted_result[0], **formatted_game_info[0]}
+            final_results = {**formatted_result[0], **formatted_game_info[0], **organiser}
             game_results.append(final_results)
     return custom_response(game_results, 200)
 
@@ -87,6 +89,8 @@ def get_all_organiser_games():
     current_user_id = Auth.current_user_id()
     host = GameModel.get_game_by_org_id(current_user_id)
     games = [*host]
+    print("***************")
+    print(games)
     results = []
     game_results = []
     for game in games:
@@ -94,11 +98,13 @@ def get_all_organiser_games():
         game = GameModel.get_games_by_id(game.id)
         formatted_result = result_schema.dump(result, many=True)
         formatted_game_info = game_schema.dump(game, many=True)
+        opponent = PlayerModel.get_opponent_info(formatted_game_info[0]['opponent_id'])
+
         if len(formatted_result) == 0:
-            game_results.append(formatted_game_info[0])
+            final_results = {**formatted_game_info[0], **opponent}
+            game_results.append(final_results)
         elif len(formatted_result) != 0:
-            results.append(formatted_result[0])
-            final_results = {**formatted_result[0], **formatted_game_info[0]}
+            final_results = {**formatted_result[0], **formatted_game_info[0], **opponent}
             game_results.append(final_results)
         # if not formatted_result:
         #     continue
