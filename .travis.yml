@@ -10,7 +10,6 @@ install:
 - pipenv install --dev
 script:
 - py.test --cov=src --cov-config .coveragerc --cov-report term-missing
-
 # after_success:
 #   - coveralls
 # env:

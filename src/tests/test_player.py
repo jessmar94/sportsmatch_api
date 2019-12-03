@@ -21,7 +21,8 @@ class PlayersTest(unittest.TestCase):
       "gender": "M",
       "dob": "1990-01-01",
       "ability": "Beginner",
-      "postcode": "n169np"
+      "postcode": "n169np",
+      "rank_points": 50
     }
 
     with self.app.app_context():

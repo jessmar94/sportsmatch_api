@@ -34,6 +34,7 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
     self.opponent_id = data.get('opponent_id')
     self.game_date = data.get('game_date')
     self.game_time = data.get('game_time')
+    self.confirmed = data.get('confirmed')
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
 
@@ -51,6 +52,7 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
     db.session.delete(self)
     db.session.commit()
 
+  # staticmethod is a class method
   @staticmethod
   def get_all_games():
     return GameModel.query.all()
@@ -62,6 +64,10 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
   @staticmethod
   def get_one_game(id):
     return GameModel.query.get(id)
+
+  @staticmethod
+  def get_games_by_id(value):
+    return GameModel.query.filter_by(id=value)
 
   @staticmethod
   def get_game_by_org_id(user_id):
