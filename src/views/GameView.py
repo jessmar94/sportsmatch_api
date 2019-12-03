@@ -74,10 +74,7 @@ def get_all_opponent_games():
             game_results.append(formatted_game_info[0])
         elif len(formatted_result) != 0:
             results.append(formatted_result[0])
-            partial_results = results[0]
-            results.append(formatted_game_info[0])
-            partial_games = results[1]
-            final_results = {**partial_results, **partial_games}
+            final_results = {**formatted_result[0], **formatted_game_info[0]}
             game_results.append(final_results)
     return custom_response(game_results, 200)
 
@@ -101,10 +98,7 @@ def get_all_organiser_games():
             game_results.append(formatted_game_info[0])
         elif len(formatted_result) != 0:
             results.append(formatted_result[0])
-            partial_results = results[0]
-            results.append(formatted_game_info[0])
-            partial_games = results[1]
-            final_results = {**partial_results, **partial_games}
+            final_results = {**formatted_result[0], **formatted_game_info[0]}
             game_results.append(final_results)
         # if not formatted_result:
         #     continue
