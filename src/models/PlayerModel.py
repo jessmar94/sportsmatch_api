@@ -129,7 +129,8 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
         PlayerModel.email,
         PlayerModel.dob,
         PlayerModel.ability,
-        PlayerModel.gender
+        PlayerModel.gender,
+        PlayerModel.rank_points
     ).filter_by(id=id).first()
 
   @staticmethod
