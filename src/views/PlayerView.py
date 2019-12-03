@@ -57,7 +57,7 @@ def login():
         return custom_response({'error': 'invalid credentials'}, 400)
 
     if not player.check_hash(data.get('password')):
-        return custom_response({'error': 'invalid credentials'}, 400)
+        return custom_response({'error': 'invalid password'}, 400)
 
     player_data = player_schema.dump(player)
 
@@ -77,8 +77,6 @@ def get_a_player(player_id):
     if not player:
         return custom_response({'error': 'player not found'}, 404)
 
-
-    player_data = player_schema.dump(player)
     return custom_response(player_data, 200)
 
 @player_api.route('/my_profile', methods=['GET'])
