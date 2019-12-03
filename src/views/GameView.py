@@ -124,25 +124,6 @@ def create():
   data = game_schema.dump(game)
   return custom_response(data, 201)
 
-@game_api.route('/<int:game_id>', methods=['PATCH'])
-@Auth.auth_required
-def confirm_game(game_id):
-    """
-    Confirm a Game
-    """
-    user_id = Auth.current_user_id()
-    req_data = request.get_json()
-    game = GameModel.get_one_game(game_id)
-    data = game_schema.dump(game)
-    if not game:
-        return custom_response({'error': 'game not found'}, 404)
-    if data.get('opponent_id') != user_id:
-        return custom_response({'error': 'permission denied'}, 400)
-    data = game_schema.load(req_data, partial=True)
-    game.update(data)
-    data = game_schema.dump(game)
-    return custom_response(data, 201)
-
 @game_api.route('/<int:game_id>/edit', methods=['PATCH'])
 @Auth.auth_required
 def edit_game(game_id):

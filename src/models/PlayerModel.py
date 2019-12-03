@@ -95,7 +95,11 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   def update(self, data):
     for key, item in data.items():
         if key == 'password':
-            self.password = self.__generate_hash(value)
+            self.password = self.__generate_hash(data.get('password'))
+        if key == 'postcode':
+            self.postcode = data.get('postcode').upper().replace(' ', '')
+        if key == 'ability':    
+            self.rank_points = self.set_rank_points(data.get('ability'))
         setattr(self, key, item)
     self.modified_at = datetime.datetime.utcnow()
     db.session.commit()
@@ -172,8 +176,8 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
 
   @staticmethod
   def get_distance_between_postcodes(org_code, opp_code, opp_id):
-     new_org_code = org_code[:-3].upper()
-     new_opp_code = opp_code[:-3].upper()
+     new_org_code = org_code[:-3]
+     new_opp_code = opp_code[:-3]
      country = pgeocode.GeoDistance('gb')
      return country.query_postal_code(new_org_code, new_opp_code)
 
