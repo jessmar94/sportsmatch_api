@@ -132,6 +132,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
         PlayerModel.dob,
         PlayerModel.ability,
         PlayerModel.gender,
+        PlayerModel.rank_points,
         PlayerModel.bio,
         PlayerModel.sport
     ).filter_by(id=id).first()

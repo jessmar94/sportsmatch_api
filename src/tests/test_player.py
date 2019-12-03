@@ -56,22 +56,22 @@ class PlayersTest(unittest.TestCase):
     self.assertEqual(res.status_code, 201)
     invalid_password_player = {
       "email": "dom@test.com",
-      "password": "password!"
+      "password": "dgfdgdfg!"
     }
     res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(invalid_password_player))
     json_data = json.loads(res.data)
     self.assertFalse(json_data.get('jwt_token'))
-    self.assertEqual(json_data.get('error'), 'invalid credentials')
+    self.assertEqual(json_data.get('error'), 'invalid password')
     self.assertEqual(res.status_code, 400)
 
   def test_error_when_player_login_with_invalid_email(self):
     res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player))
     self.assertEqual(res.status_code, 201)
-    invalid_password_player = {
+    invalid_email_player = {
       "email": "dom@te.com",
       "password": "password"
     }
-    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(invalid_password_player))
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(invalid_email_player))
     json_data = json.loads(res.data)
     self.assertFalse(json_data.get('jwt_token'))
     self.assertEqual(json_data.get('error'), 'invalid credentials')
