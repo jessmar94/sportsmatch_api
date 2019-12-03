@@ -147,16 +147,16 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     return player_schema.dump(player)
 
   @staticmethod
-  def get_filtered_players(id, ability, distance, sport):
+  def get_filtered_players(id, ability, distance):
     user_schema = PlayerSchema()
     user = PlayerModel.query.filter_by(id=id).first()
     serialized_user = user_schema.dump(user)
-    players = PlayerModel.get_players_by_ability_and_sport(id, ability, sport)
+    players = PlayerModel.get_players_by_ability(id, ability)
     return PlayerModel.get_players_within_distance(players, serialized_user, distance)
 
   @staticmethod
-  def get_players_by_ability_and_sport(id, ability, sport):
-    return PlayerModel.query.filter(PlayerModel.ability==ability, PlayerModel.sport==sport, PlayerModel.id != id)
+  def get_players_by_ability(id, ability):
+    return PlayerModel.query.filter(PlayerModel.ability==ability, PlayerModel.id != id)
 
   @staticmethod
   def get_players_within_distance(players, user, distance):
