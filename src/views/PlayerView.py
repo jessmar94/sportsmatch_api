@@ -49,15 +49,15 @@ def login():
     data = player_schema.load(req_data, partial=True)
 
     if not data.get('email') or not data.get('password'):
-        return custom_response({'error': 'you need email and password to sign in'}, 401)
+        return custom_response({'error': 'you need email and password to sign in'}, 400)
 
     player = PlayerModel.get_player_by_email(data.get('email'))
 
     if not player:
-        return custom_response({'error': 'invalid username'}, 402)
+        return custom_response({'error': 'invalid credentials'}, 400)
 
     if not player.check_hash(data.get('password')):
-        return custom_response({'error': 'invalid password'}, 403)
+        return custom_response({'error': 'invalid password'}, 400)
 
     player_data = player_schema.dump(player)
 
