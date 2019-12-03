@@ -34,7 +34,6 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
     self.opponent_id = data.get('opponent_id')
     self.game_date = data.get('game_date')
     self.game_time = data.get('game_time')
-    self.confirmed = data.get('confirmed')
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
 
@@ -71,11 +70,11 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
 
   @staticmethod
   def get_game_by_org_id(user_id):
-    return GameModel.query.filter_by(organiser_id=user_id).filter(GameModel.confirmed.is_(True), GameModel.game_date <= datetime.datetime.utcnow())
+    return GameModel.query.filter_by(organiser_id=user_id).filter(GameModel.status == "confirmed", GameModel.game_date <= datetime.datetime.utcnow())
 
   @staticmethod
   def get_game_by_opp_id(user_id):
-    return GameModel.query.filter_by(opponent_id=user_id).filter(GameModel.confirmed.is_(True), GameModel.game_date <= datetime.datetime.utcnow())
+    return GameModel.query.filter_by(opponent_id=user_id).filter(GameModel.status == "confirmed", GameModel.game_date <= datetime.datetime.utcnow())
 
   def __repr__(self):
     return '<id {}>'.format(self.id)
