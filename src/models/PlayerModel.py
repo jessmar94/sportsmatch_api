@@ -188,6 +188,18 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
      country = pgeocode.GeoDistance('gb')
      return country.query_postal_code(org_code[:-3], opp_code[:-3])
 
+  @staticmethod
+  def get_player_location(postcode):
+    req_data = requests.get(f'https://api.postcodes.io/postcodes/{postcode}').json()
+    data = {}
+    if req_data['status'] == 200:
+      data['latitude'] = req_data['result']['latitude']
+      data['longitude'] = req_data['result']['longitude']
+      data['location'] = req_data['result']['admin_district']
+      return(data)
+    return(data['error'])
+
+
   def __repr__(self): # returns a printable representation of the PlayerModel object (returning the id only)
     return '<id {}>'.format(self.id)
 
