@@ -54,7 +54,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.postcode = data.get('postcode')
 
   def set_rank_points(self, ability):
-      return self.RANKS[ability]/2
+      return self.RANKS[ability]-50
 
   def update_winner_rank_points(self):
       new_points = getattr(self, 'rank_points') + 5
@@ -91,10 +91,13 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   def update(self, data):
     for key, item in data.items():
         if key == 'password':
-            self.password = self.__generate_hash(data.get('password'))
-        if key == 'ability':    
-            self.rank_points = self.set_rank_points(data.get('ability'))
-        setattr(self, key, item)
+            setattr(self, 'password', self.__generate_hash(item))
+        elif key == 'ability':    
+            self.rank_points = self.set_rank_points(item)
+            setattr(self, 'rank_points', self.rank_points)
+            setattr(self, 'ability', item)
+        else: 
+          setattr(self, key, item)
     self.modified_at = datetime.datetime.utcnow()
     db.session.commit()
 
