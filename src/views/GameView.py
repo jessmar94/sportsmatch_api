@@ -109,6 +109,7 @@ def get_all_organiser_games():
         #
         # if not formatted_game_info:
         #     continue
+    print(game_results)
     return custom_response(game_results, 200)
 
 @game_api.route('/', methods=['POST'])
