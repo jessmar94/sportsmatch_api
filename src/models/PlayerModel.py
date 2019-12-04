@@ -137,11 +137,6 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     ).filter_by(id=id).first()
 
   @staticmethod
-  def get_player_location(postcode):
-    req_data = requests.get(f'https://api.postcodes.io/postcodes/{postcode}').json()
-    return(req_data['result']['admin_district'])
-
-  @staticmethod
   def get_one_player(id):
     return PlayerModel.query.get(id)
 
