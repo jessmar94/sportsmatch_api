@@ -8,78 +8,18 @@ result_api = Blueprint('results', __name__)
 result_schema = ResultSchema()
 game_schema = GameSchema()
 
-@result_api.route('/opponent', methods=['GET'])
-@Auth.auth_required
-def get_all_opponent():
-    """
-    Logged in player can view all results where they are the opponent
-    """
-    current_user_id = Auth.current_user_id()
-    guest = GameModel.get_game_by_opp_id(current_user_id)
-    games = [*guest]
-    results = []
-    game_results = []
-    for game in games:
-        result = ResultModel.get_all_results(game.id)
-        game = GameModel.get_games_by_id(game.id)
-        formatted_result = result_schema.dump(result, many=True)
-        formatted_game_info = game_schema.dump(game, many=True)
-        if not formatted_result:
-            continue
-
-        if not formatted_game_info:
-            continue
-
-        results.append(formatted_result[0])
-        partial_results = results[0]
-        results.append(formatted_game_info[0])
-        partial_games = results[1]
-        final_results = {**partial_results, **partial_games}
-        game_results.append(final_results)
-    return custom_response(game_results, 200)
-
-@result_api.route('/organiser', methods=['GET'])
-@Auth.auth_required
-def get_all_organiser():
-    """
-    Logged in player can view all results where they are the organiser
-    """
-    current_user_id = Auth.current_user_id()
-    host = GameModel.get_game_by_org_id(current_user_id)
-    games = [*host]
-    results = []
-    game_results = []
-    for game in games:
-        result = ResultModel.get_all_results(game.id)
-        game = GameModel.get_games_by_id(game.id)
-        formatted_result = result_schema.dump(result, many=True)
-        formatted_game_info = game_schema.dump(game, many=True)
-        if not formatted_result:
-            continue
-
-        if not formatted_game_info:
-            continue
-
-        results.append(formatted_result[0])
-        partial_results = results[0]
-        results.append(formatted_game_info[0])
-        partial_games = results[1]
-        final_results = {**partial_results, **partial_games}
-        game_results.append(final_results)
-    return custom_response(game_results, 200)
-
-@result_api.route('/<int:result_id>', methods=['GET'])
-@Auth.auth_required
-def show_one_result(result_id):
-    current_user_id = Auth.current_user_id()
-
-    result = ResultModel.get_one_result(result_id)
-    if result.winner_id == current_user_id or result.loser_id == current_user_id:
-            data = result_schema.dump(result)
-            return custom_response(data, 200)
-
-    message = {'error': 'You must have played in this game to view the result.'}
-    return custom_response(message, 404)
+# @result_api.route('/<int:result_id>', methods=['GET'])
+# @Auth.auth_required
+# def show_one_result(result_id):
+#     current_user_id = Auth.current_user_id()
+#
+#     result = ResultModel.get_one_result(result_id)
+#     if result.winner_id == current_user_id or result.loser_id == current_user_id:
+#             data = result_schema.dump(result)
+#             return custom_response(data, 200)
+#
+#     message = {'error': 'You must have played in this game to view the result.'}
+#     return custom_response(message, 404)
 
 @result_api.route('/<int:game_id>/new', methods=['POST'])
 @Auth.auth_required
@@ -89,10 +29,8 @@ def create(game_id):
       """
       current_user_id = Auth.current_user_id()
       req_data = request.get_json()
-      print("---------")
       winner = PlayerModel.get_one_player(req_data['winner_id'])
       loser = PlayerModel.get_one_player(req_data['loser_id'])
-      print(winner, loser)
       data = result_schema.load(req_data)
       result = ResultModel.get_result_by_game(game_id)
       if result:
@@ -109,33 +47,7 @@ def create(game_id):
           result.save()
           return custom_response(data, 201)
       message = {'error': 'You can only add a result if you are the organiser.'}
-      return custom_response(message, 404)
-
-# @result_api.route('/<int:result_id>/edit', methods=['PATCH'])
-# @Auth.auth_required
-# def edit_result(result_id):
-#     """
-#     Edit a Result
-#     """
-#     current_user_id = Auth.current_user_id()
-#     req_data = request.get_json()
-#     result = ResultModel.get_one_result(result_id)
-#
-#     if not result:
-#         return custom_response({'error': 'result not found'}, 404)
-#
-#     game = GameModel.get_one_game(result.game_id)
-#     if game.opponent_id == current_user_id:
-#         data = result_schema.load(req_data, partial=True)
-#         winner = PlayerModel.get_one_player(data['winner_id'])
-#         loser= PlayerModel.get_one_player(data['loser_id'])
-#         winner.update_winner_rank_points()
-#         loser.update_loser_rank_points()
-#         result.update(data)
-#         data = result_schema.dump(result)
-#         return custom_response(data, 201)
-#     else:
-#         return custom_response({'error': 'only opponent can edit the result'}, 404)
+      return custom_response(message, 400)
 
 def custom_response(res, status_code):
     """

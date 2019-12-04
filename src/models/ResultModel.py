@@ -37,23 +37,23 @@ class ResultModel(db.Model): # ResultModel class inherits from db.Model
         db.session.add(self)
         db.session.commit()
 
-    def update(self, data):
-        for key, item in data.items():
-            setattr(self, key, item)
-        self.modified_at = datetime.datetime.utcnow()
-        db.session.commit()
+    # def update(self, data):
+    #     for key, item in data.items():
+    #         setattr(self, key, item)
+    #     self.modified_at = datetime.datetime.utcnow()
+    #     db.session.commit()
 
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+    # def delete(self):
+    #     db.session.delete(self)
+    #     db.session.commit()
 
-    @staticmethod
-    def get_all_results():
-        return ResultModel.query.all()
+    # @staticmethod
+    # def get_all_results():
+    #     return ResultModel.query.all()
 
-    @staticmethod
-    def get_one_result(id):
-        return ResultModel.query.get(id)
+    # @staticmethod
+    # def get_one_result(id):
+    #     return ResultModel.query.get(id)
 
     @staticmethod
     def get_result_by_game(value):

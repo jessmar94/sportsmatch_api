@@ -47,9 +47,9 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
     self.modified_at = datetime.datetime.utcnow()
     db.session.commit()
 
-  def delete(self):
-    db.session.delete(self)
-    db.session.commit()
+  # def delete(self):
+  #   db.session.delete(self)
+  #   db.session.commit()
 
   # staticmethod is a class method
   @staticmethod
