@@ -120,19 +120,6 @@ class GamesTest(unittest.TestCase):
     res = self.client().get('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token})
     json_data = json.loads(res.data)
 
-  # def test_get_all_opponent_games(self):
-  #   res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
-  #   api_token = json.loads(res.data).get('jwt_token')
-  #   res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
-  #   json_data = json.loads(res.data)
-  #   res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game_2))
-  #   json_data = json.loads(res.data)
-  #   res = self.client().get('api/v1/games/organiser', headers={'Content-Type': 'application/json', 'api-token': api_token})
-  #   json_data = json.loads(res.data)
-  #   print("=================")
-  #   print(json_data)
-  #   self.assertEqual(res.status_code, 404)
-
   def test_edit_game(self):
     updated_game = {
         "game_time": "12:00:00"
