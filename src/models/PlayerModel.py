@@ -151,8 +151,15 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     user_schema = PlayerSchema()
     user = PlayerModel.query.filter_by(id=id).first()
     serialized_user = user_schema.dump(user)
-    players = PlayerModel.get_players_by_ability(id, ability, serialized_user['sport'])
+    players = PlayerModel.get_players_by_ability(id, ability, user.sport)
     return PlayerModel.get_players_within_distance(players, serialized_user, distance)
+  
+  @staticmethod
+  def get_player_location(postcode):
+    req_data = requests.get(f'https://api.postcodes.io/postcodes/{postcode}').json()
+    if req_data['status'] == 200:
+      return(req_data['result']['admin_district'])
+    return(req_data['error'])
 
   @staticmethod
   def get_players_by_ability(id, ability, sport):

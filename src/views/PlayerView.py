@@ -71,6 +71,7 @@ def get_a_player(player_id):
     """
     player = PlayerModel.get_player_info(player_id)
     player_data = player_schema.dump(player)
+    player_data['location'] = PlayerModel.get_player_location(player_data['postcode'])
 
     if not player:
         return custom_response({'error': 'player not found'}, 404)
