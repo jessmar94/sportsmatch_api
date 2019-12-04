@@ -91,6 +91,38 @@ class ResultsTest(unittest.TestCase):
           "result_confirmed": True
         }
 
+    def test_return_of_games_with_results_for_organiser(self):
+          updated_game = {
+            "status": "confirmed"
+          }
+          res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+          api_token = json.loads(res.data).get('jwt_token')
+          res = self.client().patch('api/v1/games/1/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(updated_game))
+          json_data = json.loads(res.data)
+          res = self.client().post("api/v1/results/1/new", headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_1))
+          json_data = json.loads(res.data)
+          res = self.client().get('api/v1/games/organiser', headers={'Content-Type': 'application/json', 'api-token': api_token})
+          json_data = json.loads(res.data)
+          print(json_data)
+          self.assertEqual(json_data[0].get('winner_id'), 1)
+          self.assertEqual(res.status_code, 200)
+
+    def test_return_of_games_with_results_for_opponent(self):
+          updated_game = {
+            "status": "confirmed"
+          }
+          res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+          api_token = json.loads(res.data).get('jwt_token')
+          res = self.client().patch('api/v1/games/1/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(updated_game))
+          json_data = json.loads(res.data)
+          res = self.client().post("api/v1/results/1/new", headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_2))
+          json_data = json.loads(res.data)
+          res = self.client().get('api/v1/games/opponent', headers={'Content-Type': 'application/json', 'api-token': api_token})
+          json_data = json.loads(res.data)
+          print(json_data)
+          self.assertEqual(json_data[0].get('winner_id'), 2)
+          self.assertEqual(res.status_code, 200)
+
     def test_organiser_creates_result(self):
           updated_game = {
             "status": "confirmed"
