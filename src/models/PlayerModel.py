@@ -161,6 +161,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
       return(req_data['result']['admin_district'])
     return(req_data['error'])
 
+# Currently not in use anywhere
   @staticmethod
   def get_players_by_ability(id, ability, sport):
     return PlayerModel.query.with_entities(
