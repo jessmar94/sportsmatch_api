@@ -12,20 +12,15 @@ def create():
     """
     req_data = request.get_json()
     data = player_schema.load(req_data)
-
     player_in_db = PlayerModel.get_player_by_email(data.get('email'))
     if player_in_db:
         message = {'error': 'Player already exist, please supply another email address'}
         return custom_response(message, 400)
 
     player = PlayerModel(data)
-    print(player.rank_points)
     player.save()
-
     player_data = player_schema.dump(player)
-
     token = Auth.generate_token(player_data.get('id'))
-
     return custom_response({'jwt_token': token, 'user_id': player_data.get('id')}, 201)
 
 @player_api.route('/<int:player_id>/image', methods=['GET'])
