@@ -14,7 +14,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   Player Model
   """
   RANKS = {'Beginner': 100, 'Intermediate': 200, 'Advanced': 300}
-  
+
   __tablename__ = 'players'
 
   id = db.Column(db.Integer, primary_key=True)
@@ -92,15 +92,15 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     for key, item in data.items():
         if key == 'password':
             self.password = self.__generate_hash(data.get('password'))
-        if key == 'ability':    
+        if key == 'ability':
             self.rank_points = self.set_rank_points(data.get('ability'))
         setattr(self, key, item)
     self.modified_at = datetime.datetime.utcnow()
     db.session.commit()
 
-  def delete(self):
-    db.session.delete(self)
-    db.session.commit()
+  # def delete(self):
+  #   db.session.delete(self)
+  #   db.session.commit()
 
   def __generate_hash(self, password):
     return bcrypt.generate_password_hash(password, rounds=10).decode("utf-8")
@@ -108,9 +108,9 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   def check_hash(self, password):
     return bcrypt.check_password_hash(self.password, password)
 
-  @staticmethod
-  def get_all_players():
-    return PlayerModel.query.all()
+  # @staticmethod
+  # def get_all_players():
+  #   return PlayerModel.query.all()
 
   @staticmethod
   def get_player_by_email(value):
@@ -153,7 +153,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     serialized_user = user_schema.dump(user)
     players = PlayerModel.get_players_by_ability(id, ability, user.sport)
     return PlayerModel.get_players_within_distance(players, serialized_user, distance)
-  
+
   @staticmethod
   def get_player_location(postcode):
     req_data = requests.get(f'https://api.postcodes.io/postcodes/{postcode}').json()
@@ -175,11 +175,11 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
         PlayerModel.sport,
         PlayerModel.postcode
     ).filter(
-        PlayerModel.ability==ability, 
-        PlayerModel.id != id, 
+        PlayerModel.ability==ability,
+        PlayerModel.id != id,
         PlayerModel.sport==sport
       )
- 
+
   @staticmethod
   def get_players_within_distance(players, user, distance):
       user_postcode = user['postcode']

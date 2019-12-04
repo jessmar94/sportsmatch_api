@@ -40,12 +40,10 @@ def login():
     """
     req_data = request.get_json()
     data = player_schema.load(req_data, partial=True)
-
     if not data.get('email') or not data.get('password'):
         return custom_response({'error': 'you need email and password to sign in'}, 400)
 
     player = PlayerModel.get_player_by_email(data.get('email'))
-
     if not player:
         return custom_response({'error': 'invalid credentials'}, 400)
 
@@ -53,9 +51,7 @@ def login():
         return custom_response({'error': 'invalid password'}, 400)
 
     player_data = player_schema.dump(player)
-
     token = Auth.generate_token(player_data.get('id'))
-
     return custom_response({'jwt_token': token, 'user_id': player_data.get('id')}, 200)
 
 @player_api.route('/<int:player_id>', methods=['GET'])
@@ -69,7 +65,7 @@ def get_a_player(player_id):
     player_data['location'] = PlayerModel.get_player_location(player_data['postcode'])
 
     if not player:
-        return custom_response({'error': 'player not found'}, 404)
+        return custom_response({'error': 'player not found'}, 400)
 
     return custom_response(player_data, 200)
 
@@ -85,17 +81,17 @@ def get_current_user():
 
     return custom_response(player_data, 200)
 
-@player_api.route('/', methods=['GET'])
-@Auth.auth_required
-def get_all_players():
-    """
-    View all filtered player's
-    """
-    user_id = Auth.current_user_id()
-    players = PlayerModel.get_filtered_players(user_id, request.headers.get('ability'), request.headers.get('distance'))
-    players_data = player_schema.dump(players, many=True)
-
-    return custom_response(players_data, 200)
+# @player_api.route('/', methods=['GET'])
+# @Auth.auth_required
+# def get_all_players():
+#     """
+#     View all filtered player's
+#     """
+#     user_id = Auth.current_user_id()
+#     players = PlayerModel.get_filtered_players(user_id, request.headers.get('ability'), request.headers.get('distance'))
+#     players_data = player_schema.dump(players, many=True)
+#
+#     return custom_response(players_data, 200)
 
 @player_api.route('/my_profile', methods=['PATCH'])
 @Auth.auth_required
@@ -114,17 +110,17 @@ def update():
     return custom_response(player_data, 200)
 
 
-@player_api.route('/my_profile', methods=['DELETE'])
-@Auth.auth_required
-def delete():
-    """
-    Delete logged-in player's account
-    """
-    user_id = Auth.current_user_id()
-    player = PlayerModel.get_one_player(user_id)
-    player.delete()
-
-    return custom_response({'message': 'user deleted'}, 204)
+# @player_api.route('/my_profile', methods=['DELETE'])
+# @Auth.auth_required
+# def delete():
+#     """
+#     Delete logged-in player's account
+#     """
+#     user_id = Auth.current_user_id()
+#     player = PlayerModel.get_one_player(user_id)
+#     player.delete()
+#
+#     return custom_response({'message': 'user deleted'}, 204)
 
 def custom_response(res, status_code):
     """
