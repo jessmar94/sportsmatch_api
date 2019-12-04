@@ -1,8 +1,6 @@
 from flask import request, json, Response, Blueprint, g, render_template
 from ..models.PlayerModel import PlayerModel, PlayerSchema
 from ..shared.Authentication import Auth
-# from base64 import decodestring
-
 
 player_api = Blueprint('player', __name__)
 player_schema = PlayerSchema()
