@@ -1,6 +1,7 @@
 from flask import request, g, Blueprint, json, Response
 from ..shared.Authentication import Auth
 from ..models.MessageModel import MessageModel, MessageSchema
+from ..models.PlayerModel import PlayerModel
 
 message_api = Blueprint('message_api', __name__)
 message_schema = MessageSchema()
@@ -30,7 +31,8 @@ def get_all_messages(game_id):
         'organiser': message.game.organiser.first_name,
         'opponent': message.game.opponent.first_name,
         'organiser_id': message.game.organiser_id,
-        'opponent_id': message.game.opponent_id
+        'opponent_id': message.game.opponent_id,
+        "player_postcode": PlayerModel.get_player_postcode(Auth.current_user_id())
     })
     return custom_response(data, 200)
 

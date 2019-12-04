@@ -14,7 +14,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   Player Model
   """
   RANKS = {'Beginner': 100, 'Intermediate': 200, 'Advanced': 300}
-  
+
   __tablename__ = 'players'
 
   id = db.Column(db.Integer, primary_key=True)
@@ -92,7 +92,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     for key, item in data.items():
         if key == 'password':
             self.password = self.__generate_hash(data.get('password'))
-        if key == 'ability':    
+        if key == 'ability':
             self.rank_points = self.set_rank_points(data.get('ability'))
         setattr(self, key, item)
     self.modified_at = datetime.datetime.utcnow()
@@ -168,11 +168,11 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
         PlayerModel.sport,
         PlayerModel.postcode
     ).filter(
-        PlayerModel.ability==ability, 
-        PlayerModel.id != id, 
+        PlayerModel.ability==ability,
+        PlayerModel.id != id,
         PlayerModel.sport==sport
       )
- 
+
   @staticmethod
   def get_players_within_distance(players, user, distance):
       user_postcode = user['postcode']
@@ -198,6 +198,10 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
       data['location'] = req_data['result']['admin_district']
       return(data)
     return(data['error'])
+
+  @staticmethod
+  def get_player_postcode(id):
+      return PlayerMode.query.with_entities(PlayerModel.postcode).filter_by(id=id).first()
 
 
   def __repr__(self): # returns a printable representation of the PlayerModel object (returning the id only)
