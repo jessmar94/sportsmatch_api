@@ -1,8 +1,6 @@
 from flask import request, json, Response, Blueprint, g, render_template
 from ..models.PlayerModel import PlayerModel, PlayerSchema
 from ..shared.Authentication import Auth
-# from base64 import decodestring
-
 
 player_api = Blueprint('player', __name__)
 player_schema = PlayerSchema()
@@ -73,6 +71,7 @@ def get_a_player(player_id):
     """
     player = PlayerModel.get_player_info(player_id)
     player_data = player_schema.dump(player)
+    player_data['location'] = PlayerModel.get_player_location(player_data['postcode'])
 
     if not player:
         return custom_response({'error': 'player not found'}, 404)

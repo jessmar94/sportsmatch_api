@@ -7,17 +7,14 @@ from .GameModel import GameSchema
 from .ResultModel import ResultSchema
 from .MessageModel import MessageSchema
 import pgeocode
-# import from sqlalchemy import and_
+import requests
 
 class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   """
   Player Model
   """
   RANKS = {'Beginner': 100, 'Intermediate': 200, 'Advanced': 300}
-  # ABILITIES = {range(0,100): 'Beginner', range(101,200):'Intermediate', range(201,..): 'Advanced'}
-  # abiltiy = ['Beginner', 'Intermediate', 'Advanced']
-
-  # name our table 'players'
+  
   __tablename__ = 'players'
 
   id = db.Column(db.Integer, primary_key=True)
@@ -54,7 +51,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.created_at = datetime.datetime.utcnow()
     self.modified_at = datetime.datetime.utcnow()
     self.profile_image = data.get('profile_image')
-    self.postcode = data.get('postcode').upper().replace(' ', '')
+    self.postcode = data.get('postcode')
 
   def set_rank_points(self, ability):
       return self.RANKS[ability]/2
@@ -87,7 +84,6 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
       self.modified_at = datetime.datetime.utcnow()
       db.session.commit()
 
-
   def save(self):
     db.session.add(self)
     db.session.commit()
@@ -96,8 +92,6 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     for key, item in data.items():
         if key == 'password':
             self.password = self.__generate_hash(data.get('password'))
-        if key == 'postcode':
-            self.postcode = data.get('postcode').upper().replace(' ', '')
         if key == 'ability':    
             self.rank_points = self.set_rank_points(data.get('ability'))
         setattr(self, key, item)
@@ -128,7 +122,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
 
   @staticmethod
   def get_player_info(id):
-    return PlayerModel.query.with_entities(
+    return  PlayerModel.query.with_entities(
         PlayerModel.id,
         PlayerModel.first_name,
         PlayerModel.last_name,
@@ -138,8 +132,14 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
         PlayerModel.gender,
         PlayerModel.rank_points,
         PlayerModel.bio,
-        PlayerModel.sport
+        PlayerModel.sport,
+        PlayerModel.postcode
     ).filter_by(id=id).first()
+
+  @staticmethod
+  def get_player_location(postcode):
+    req_data = requests.get(f'https://api.postcodes.io/postcodes/{postcode}').json()
+    return(req_data['result']['admin_district'])
 
   @staticmethod
   def get_one_player(id):
@@ -155,36 +155,48 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   def get_filtered_players(id, ability, distance):
     user_schema = PlayerSchema()
     user = PlayerModel.query.filter_by(id=id).first()
-    print("---------")
     serialized_user = user_schema.dump(user)
     players = PlayerModel.get_players_by_ability(id, ability, serialized_user['sport'])
     return PlayerModel.get_players_within_distance(players, serialized_user, distance)
 
   @staticmethod
   def get_players_by_ability(id, ability, sport):
-    return PlayerModel.query.filter(PlayerModel.ability==ability, PlayerModel.id != id, PlayerModel.sport==sport)
-
+    return PlayerModel.query.with_entities(
+        PlayerModel.id,
+        PlayerModel.first_name,
+        PlayerModel.last_name,
+        PlayerModel.dob,
+        PlayerModel.ability,
+        PlayerModel.gender,
+        PlayerModel.rank_points,
+        PlayerModel.bio,
+        PlayerModel.sport,
+        PlayerModel.postcode
+    ).filter(
+        PlayerModel.ability==ability, 
+        PlayerModel.id != id, 
+        PlayerModel.sport==sport
+      )
+ 
   @staticmethod
   def get_players_within_distance(players, user, distance):
       user_postcode = user['postcode']
       filtered_array = []
       for player in players:
-          distances_between_players = int(round(PlayerModel.get_distance_between_postcodes(player.postcode, user_postcode, player.id)))
+          distances_between_players = int(round(PlayerModel.get_distance_between_postcodes(player.postcode, user_postcode)))
           if distances_between_players <= int(distance):
               filtered_array.append(player)
       return filtered_array
 
   @staticmethod
-  def get_distance_between_postcodes(org_code, opp_code, opp_id):
-     new_org_code = org_code[:-3]
-     new_opp_code = opp_code[:-3]
+  def get_distance_between_postcodes(org_code, opp_code):
      country = pgeocode.GeoDistance('gb')
-     return country.query_postal_code(new_org_code, new_opp_code)
+     return country.query_postal_code(org_code[:-3], opp_code[:-3])
 
   def __repr__(self): # returns a printable representation of the PlayerModel object (returning the id only)
     return '<id {}>'.format(self.id)
 
-class BytesField(fields.Field):
+class Postcode(fields.Field):
     """
     Creating custom field for scheme that serializes base64 to LargeBinary
     and desrializes LargeBinary to base64
@@ -193,9 +205,26 @@ class BytesField(fields.Field):
     def _deserialize(self, value, attr, data, **kwargs):
         if value is None:
             return ""
+        return value.upper().replace(' ', '')
+
+    def _serialize(self, value, attr, obj, **kwargs):
+        if value is None:
+            return ""
+        return value
+
+class BytesField(fields.Field):
+    """
+    Creating custom field for schema that deserializes base64 to LargeBinary
+    and serializes LargeBinary to base64
+    """
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        if value is None:
+            return ""
         binary_string = bin(int.from_bytes(value.encode(), 'big'))
         binary = bytes(binary_string, 'utf-8')
         return binary
+
 
     def _serialize(self, value, attr, obj, **kwargs):
         if value is None:
@@ -221,7 +250,7 @@ class PlayerSchema(Schema):
     profile_image = BytesField(required=False)
     bio = fields.Str(required=False)
     sport = fields.Str(required=False)
+    postcode = Postcode(required=True)
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)
     games = fields.Nested(GameSchema, many=True)
-    postcode = fields.Str(required=True)

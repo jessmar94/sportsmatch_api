@@ -24,5 +24,7 @@ pytest = "*"
 gunicorn = "*"
 marshmallow-sqlalchemy = "*"
 pgeocode = "*"
+requests = "*"
+
 [requires]
 python_version = "3.7"
