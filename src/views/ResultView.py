@@ -89,6 +89,10 @@ def create(game_id):
       """
       current_user_id = Auth.current_user_id()
       req_data = request.get_json()
+      print("---------")
+      winner = PlayerModel.get_one_player(req_data['winner_id'])
+      loser = PlayerModel.get_one_player(req_data['loser_id'])
+      print(winner, loser)
       data = result_schema.load(req_data)
       result = ResultModel.get_result_by_game(game_id)
       if result:
@@ -100,36 +104,38 @@ def create(game_id):
           return custom_response(message, 400)
       if game.organiser_id == current_user_id:
           result = ResultModel(data)
+          winner.update_winner_rank_points()
+          loser.update_loser_rank_points()
           result.save()
           return custom_response(data, 201)
       message = {'error': 'You can only add a result if you are the organiser.'}
       return custom_response(message, 404)
 
-@result_api.route('/<int:result_id>/edit', methods=['PATCH'])
-@Auth.auth_required
-def edit_result(result_id):
-    """
-    Edit a Result
-    """
-    current_user_id = Auth.current_user_id()
-    req_data = request.get_json()
-    result = ResultModel.get_one_result(result_id)
-
-    if not result:
-        return custom_response({'error': 'result not found'}, 404)
-
-    game = GameModel.get_one_game(result.game_id)
-    if game.opponent_id == current_user_id:
-        data = result_schema.load(req_data, partial=True)
-        winner = PlayerModel.get_one_player(data['winner_id'])
-        loser= PlayerModel.get_one_player(data['loser_id'])
-        winner.update_winner_rank_points()
-        loser.update_loser_rank_points()
-        result.update(data)
-        data = result_schema.dump(result)
-        return custom_response(data, 201)
-    else:
-        return custom_response({'error': 'only opponent can edit the result'}, 404)
+# @result_api.route('/<int:result_id>/edit', methods=['PATCH'])
+# @Auth.auth_required
+# def edit_result(result_id):
+#     """
+#     Edit a Result
+#     """
+#     current_user_id = Auth.current_user_id()
+#     req_data = request.get_json()
+#     result = ResultModel.get_one_result(result_id)
+#
+#     if not result:
+#         return custom_response({'error': 'result not found'}, 404)
+#
+#     game = GameModel.get_one_game(result.game_id)
+#     if game.opponent_id == current_user_id:
+#         data = result_schema.load(req_data, partial=True)
+#         winner = PlayerModel.get_one_player(data['winner_id'])
+#         loser= PlayerModel.get_one_player(data['loser_id'])
+#         winner.update_winner_rank_points()
+#         loser.update_loser_rank_points()
+#         result.update(data)
+#         data = result_schema.dump(result)
+#         return custom_response(data, 201)
+#     else:
+#         return custom_response({'error': 'only opponent can edit the result'}, 404)
 
 def custom_response(res, status_code):
     """
