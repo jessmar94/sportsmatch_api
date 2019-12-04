@@ -65,7 +65,7 @@ class PlayersTest(unittest.TestCase):
   def test_get_user_image(self):
     res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player2))
     api_token = json.loads(res.data).get('jwt_token')
-    res = self.client().get('api/v1/players/2/image', headers={'Content-Type': 'application/json', 'api-token': api_token} )
+    res = self.client().get('api/v1/players/1/image', headers={'Content-Type': 'application/json', 'api-token': api_token} )
     json_data = json.loads(res.data)
     self.assertEqual(res.status_code, 200)
 
@@ -109,129 +109,117 @@ class PlayersTest(unittest.TestCase):
 
   def test_user1_can_see_user2(self):
     res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player))
-    json_data = json.loads(res.data)
     api_token = json.loads(res.data).get('jwt_token')
-    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player))
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.player))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().get('api/v1/players/1', headers={'Content-Type': 'application/json', 'api-token': api_token} )
     json_data = json.loads(res.data)
-    res = self.client().get('api/v1/players/2', headers={'Content-Type': 'application/json', 'api-token': api_token} )
-    json_data = json.loads(res.data)
+    self.assertEqual(json_data.get('first_name'), "Bob")
     self.assertEqual(res.status_code, 200)
 
-  def test_player_can_view_their_own_profile(self):
+  def test_user1_cannot_see_nonexistant_user(self):
     res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player))
-    self.assertEqual(res.status_code, 201)
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.player))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().get('api/v1/players/10', headers={'Content-Type': 'application/json'} )
+    json_data = json.loads(res.data)
+    self.assertEqual(res.status_code, 400)
+
+  def test_player_can_view_their_own_profile(self):
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player2))
     api_token = json.loads(res.data).get('jwt_token')
     res = self.client().get('api/v1/players/my_profile', headers={'Content-Type': 'application/json', 'api-token': api_token})
     json_data = json.loads(res.data)
     self.assertEqual(res.status_code, 200)
-    self.assertEqual(json_data.get('email'), 'dom@test.com')
-    self.assertEqual(json_data.get('first_name'), 'Dom')
+    self.assertEqual(json_data.get('email'), 'bob@test.com')
+    self.assertEqual(json_data.get('first_name'), 'Bob')
 
-
-  # def test_player_can_view_another_players_profile(self):
-  #   player1 = {
-  #     "first_name": "Pam",
-  #     "last_name": "M",
-  #     "email": "pam@test.com",
-  #     "password": "password",
-  #     "gender": "F",
-  #     "dob": "1990-01-01",
-  #     "ability": "Advanced",
-  #     "postcode": "n169np"
-  #   }
-  #   res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(player1))
-  #   self.assertEqual(res.status_code, 201)
-  #   res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player))
-  #   self.assertEqual(res.status_code, 201)
-  #   api_token = json.loads(res.data).get('jwt_token')
-  #   res = self.client().get('api/v1/players/1', headers={'Content-Type': 'application/json', 'api-token': api_token})
-  #   json_data = json.loads(res.data)
-  #   self.assertEqual(res.status_code, 200)
-  #   self.assertEqual(json_data.get('email'), 'pam@test.com')
-  #   self.assertEqual(json_data.get('first_name'), 'Pam')
-  #   self.assertEqual(json_data.get('ability'), 'Advanced')
-
-  def test_player_can_view_players_of_similar_ability(self):
-    player1 = {
-      "first_name": "Pam",
-      "last_name": "M",
-      "email": "pam@test.com",
-      "password": "password",
-      "gender": "F",
-      "dob": "1990-01-01",
-      "ability": "Beginner",
-      "postcode": "n169np"
+  def test_player_gets_points_if_wins(self):
+    updated_game = {
+      "status": "confirmed"
     }
-    player2 = {
-      "first_name": "Sid",
-      "last_name": "M",
-      "email": "sid@test.com",
-      "password": "password",
-      "gender": "M",
-      "dob": "1990-01-01",
-      "ability": "Advanced",
-      "postcode": "n169np"
+    game = {
+        "organiser_id": 1,
+        "opponent_id": 2,
+        "status": "pending",
+        "game_date": "2019-10-22",
+        "game_time": "15:00"
     }
-    res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(player1))
-    self.assertEqual(res.status_code, 201)
-    res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(player2))
-    self.assertEqual(res.status_code, 201)
+    result = {
+        "game_id": 1,
+        "winner_id": 1,
+        "loser_id": 2,
+        "result_confirmed": True
+    }
     res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player))
-    self.assertEqual(res.status_code, 201)
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player2))
     api_token = json.loads(res.data).get('jwt_token')
-    res = self.client().get('api/v1/players/', headers={'Content-Type': 'application/json', 'ability': 'Beginner', 'distance': '5', 'api-token': api_token})
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(game))
+    res = self.client().patch('api/v1/games/1/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(updated_game))
+    res = self.client().post("api/v1/results/1/new", headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(result))
+    res = self.client().get("api/v1/players/1", headers={'Content-Type': 'application/json', 'api-token': api_token} )
+    json_data = json.loads(res.data)
+    self.assertEqual(json_data.get('rank_points'), 55)
+
+  def test_player_loses_5_points_if_lost(self):
+    updated_game = {
+      "status": "confirmed"
+    }
+    game = {
+        "organiser_id": 1,
+        "opponent_id": 2,
+        "status": "pending",
+        "game_date": "2019-10-22",
+        "game_time": "15:00"
+    }
+    result = {
+        "game_id": 1,
+        "winner_id": 2,
+        "loser_id": 1,
+        "result_confirmed": True
+    }
+    res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player))
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player2))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(game))
+    res = self.client().patch('api/v1/games/1/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(updated_game))
+    res = self.client().post("api/v1/results/1/new", headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(result))
+    res = self.client().get("api/v1/players/1", headers={'Content-Type': 'application/json', 'api-token': api_token} )
+    json_data = json.loads(res.data)
+    self.assertEqual(json_data.get('rank_points'), 45)
+
+  def test_player_can_update_their_name(self):
+    updated_name = {
+      "first_name": "Bobby"
+    }
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player2))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().patch('api/v1/players/my_profile', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(updated_name))
     json_data = json.loads(res.data)
     self.assertEqual(res.status_code, 200)
+    self.assertEqual(json_data.get('email'), 'bob@test.com')
+    self.assertEqual(json_data.get('first_name'), 'Bobby')
 
-    for item in json_data:
-      if (item['ability']) != 'Beginner':
-        result = "Error!"
-      else:
-        result = "No error"
-
-    self.assertEqual(result, "No error")
-
-  # def test_player_cannot_see_their_profile_among_all_players(self):
-  #   player1 = {
-  #     "first_name": "Pam",
-  #     "last_name": "M",
-  #     "email": "pam@test.com",
-  #     "password": "password",
-  #     "gender": "F",
-  #     "dob": "1990-01-01",
-  #     "ability": "Beginner",
-  #     "postcode": "n169np"
-  #   }
-  #   res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(player1))
-  #   self.assertEqual(res.status_code, 201)
-  #   res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player))
-  #   self.assertEqual(res.status_code, 201)
-  #   api_token = json.loads(res.data).get('jwt_token')
-  #   res = self.client().get('api/v1/players/', headers={'Content-Type': 'application/json', 'ability': 'Beginner', 'distance': '5', 'api-token': api_token})
-  #   json_data = json.loads(res.data)
-  #   self.assertEqual(res.status_code, 200)
-  #   self.assertEqual(json_data[0].get('first_name'), 'Pam')
-  #   self.assertNotEqual(json_data[0].get('first_name'), 'Dom')
-
-  def test_player_can_update_their_own_profile(self):
+  def test_player_can_update_their_password(self):
     updated_player = {
-      "first_name": "Dominic"
+      "password": "password2",
+      "ability": "Intermediate"
     }
-    res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player))
-    self.assertEqual(res.status_code, 201)
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player2))
     api_token = json.loads(res.data).get('jwt_token')
     res = self.client().patch('api/v1/players/my_profile', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(updated_player))
     json_data = json.loads(res.data)
     self.assertEqual(res.status_code, 200)
-    self.assertEqual(json_data.get('email'), 'dom@test.com')
-    self.assertEqual(json_data.get('first_name'), 'Dominic')
+    print(json_data)
+    self.assertEqual(json_data.get('email'), 'bob@test.com')
+    self.assertEqual(json_data.get('ability'), 'Intermediate')
 
-  def test_player_can_delete_their_account(self):
-    res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player))
-    self.assertEqual(res.status_code, 201)
-    api_token = json.loads(res.data).get('jwt_token')
-    res = self.client().delete('api/v1/players/my_profile', headers={'Content-Type': 'application/json', 'api-token': api_token})
-    self.assertEqual(res.status_code, 204)
+  def test_postcode_distances(self):
+    self.assertEqual(PlayerModel.get_distance_between_postcodes("N65HQ", 'EC1M4DT'), 6.764520984238515)
+
+  def test_player_location(self):
+    self.assertEqual(PlayerModel.get_player_location("N65HQ"), "Haringey")
 
   def tearDown(self):
     """

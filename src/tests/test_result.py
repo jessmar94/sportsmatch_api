@@ -119,6 +119,7 @@ class ResultsTest(unittest.TestCase):
           res = self.client().post("api/v1/results/1/new", headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_1))
           json_data = json.loads(res.data)
           self.assertEqual(res.status_code, 201)
+          self.assertEqual(json_data.get('winner_id'), 1)
 
     def test_cannot_create_result_if_opponent(self):
           updated_game = {

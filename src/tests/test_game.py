@@ -119,6 +119,11 @@ class GamesTest(unittest.TestCase):
     json_data = json.loads(res.data)
     res = self.client().get('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token})
     json_data = json.loads(res.data)
+    organiser_id = json_data.get('organiser_games')[0].get('organiser_id')
+    opponent_id = json_data.get('challenger_games')[0].get('opponent_id')
+    self.assertEqual(organiser_id, 1)
+    self.assertEqual(opponent_id, 1)
+    self.assertEqual(res.status_code, 200)
 
   def test_edit_game(self):
     updated_game = {
