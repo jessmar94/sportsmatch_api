@@ -95,14 +95,15 @@ class MessageTest(unittest.TestCase):
           "game_id": self.game1_id,
           "organiser_id": game1_organiser,
           "opponent_id": game1_opponent,
-          "sender_id": game1_organiser,
+          "sender_id": 3,
           "content": "Yeah man what time?"
         }
 
-    def message(self):
+    def test_message(self):
         res = self.client().post('api/v1/players/login',
                                  headers={'Content-Type': 'application/json'},
                                  data=json.dumps(self.player_1))
+        print("RES",res)
         api_token = json.loads(res.data).get('jwt_token')
         res = self.client().post('api/v1/messages/',
                                  headers={'Content-Type': 'application/json',
@@ -112,18 +113,21 @@ class MessageTest(unittest.TestCase):
         self.assertEqual(json_data.get('content'), "Hey want to play a game of ball?")
         self.assertEqual(res.status_code, 201)
 
-    def test_return_one_game(self):
-        res = self.client().post('api/v1/players/login',
+    def test_return_cannot_message_player_outside_game(self):
+        response = self.client().post('api/v1/players/login',
                                  headers={'Content-Type': 'application/json'},
                                  data=json.dumps(self.player_1))
-        api_token = json.loads(res.data).get('jwt_token')
-        res = self.client().post('api/v1/messages/',
+        api_token = json.loads(response.data).get('jwt_token')
+        response_1 = self.client().post('api/v1/messages/',
                                  headers={'Content-Type': 'application/json',
                                           'api-token': api_token},
-                                 data=json.dumps(self.message_1))
-        json_data = json.loads(res.data)
-        self.assertEqual(json_data.get('content'), "Hey want to play a game of ball?")
-        self.assertEqual(res.status_code, 201)
+                                 data=json.dumps(self.message_2))
+        json_data = json.loads(response.data)
+        self.assertEqual()
+        self.assertEqual(response.status_code, 201)
+        print(response)
+        print(response_1)
+
 
     def tearDown(self):
         """
