@@ -4,6 +4,7 @@ import json
 from ..models.PlayerModel import PlayerModel, PlayerSchema
 from ..app import create_app, db
 from ..shared.Authentication import Auth
+from datetime import datetime, timedelta
 
 class GamesTest(unittest.TestCase):
   """
@@ -77,6 +78,22 @@ class GamesTest(unittest.TestCase):
       "game_time": "11:00:00"
     }
 
+    self.game_3 = {
+      "organiser_id": player_1_id,
+      "opponent_id": player_2_id,
+      "status": "pending",
+      "game_date": "2100-11-01",
+      "game_time": "17:00:00"
+    }
+
+    self.game_4 = {
+      "organiser_id": player_2_id,
+      "opponent_id": player_1_id,
+      "status": "pending",
+      "game_date": "2100-11-01",
+      "game_time": "11:00:00"
+    }
+
   def test_game_created(self):
     """ test game is created with valid credentials """
     res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
@@ -113,9 +130,9 @@ class GamesTest(unittest.TestCase):
   def test_return_all_games(self):
     res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
     api_token = json.loads(res.data).get('jwt_token')
-    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game))
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game_3))
     json_data = json.loads(res.data)
-    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game_2))
+    res = self.client().post('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.game_4))
     json_data = json.loads(res.data)
     res = self.client().get('api/v1/games/', headers={'Content-Type': 'application/json', 'api-token': api_token})
     json_data = json.loads(res.data)
