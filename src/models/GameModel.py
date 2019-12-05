@@ -58,7 +58,7 @@ class GameModel(db.Model): # GameModel class inherits from db.Model
 
   @staticmethod
   def get_all_users_games(id):
-    return GameModel.query.filter(or_(GameModel.organiser_id==id, GameModel.opponent_id==id)).order_by(GameModel.game_date.asc()).order_by(GameModel.game_time.asc())
+    return GameModel.query.filter(or_(GameModel.organiser_id==id, GameModel.opponent_id==id)).filter(GameModel.game_date >= datetime.datetime.utcnow()).order_by(GameModel.game_date.asc()).order_by(GameModel.game_time.asc())
 
   @staticmethod
   def get_one_game(id):
