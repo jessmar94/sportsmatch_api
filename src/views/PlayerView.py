@@ -66,6 +66,7 @@ def get_a_player(player_id):
     player_data_location = PlayerModel.get_player_location(player_data['postcode'])
 
     player_data_combined = {**player_data, **player_data_location}
+
     if not player:
         return custom_response({'error': 'player not found'}, 404)
     return custom_response(player_data_combined, 200)
