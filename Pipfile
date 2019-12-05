@@ -26,6 +26,8 @@ marshmallow-sqlalchemy = "*"
 pgeocode = "*"
 requests = "*"
 pylint = "*"
+flake-8 = "*"
+flake8 = "*"
 
 [requires]
 python_version = "3.7"

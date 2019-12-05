@@ -6,7 +6,7 @@ from ..models.PlayerModel import PlayerModel
 
 class GamesTest(unittest.TestCase):
     """
-    Results Test Case
+    Games Test Case
     """
     def setUp(self):
         """
