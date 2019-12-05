@@ -99,7 +99,7 @@ class MessageTest(unittest.TestCase):
           "content": "Yeah man what time?"
         }
 
-    def test_return_one_game(self):
+    def message(self):
         res = self.client().post('api/v1/players/login',
                                  headers={'Content-Type': 'application/json'},
                                  data=json.dumps(self.player_1))

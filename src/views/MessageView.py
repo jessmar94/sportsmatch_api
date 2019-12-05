@@ -5,16 +5,6 @@ from ..models.MessageModel import MessageModel, MessageSchema
 message_api = Blueprint('message_api', __name__)
 message_schema = MessageSchema()
 
-def custom_response(res, status_code):
-  """
-  Custom Response Function
-  """
-  return Response(
-    mimetype="application/json",
-    response=json.dumps(res),
-    status=status_code
-  )
-
 @message_api.route('/<int:game_id>', methods=['GET'])
 @Auth.auth_required
 def get_all_messages(game_id):
@@ -47,3 +37,13 @@ def create():
     message.save()
     data = message_schema.dump(message)
     return custom_response(data, 201)
+
+def custom_response(res, status_code):
+  """
+  Custom Response Function
+  """
+  return Response(
+    mimetype="application/json",
+    response=json.dumps(res),
+    status=status_code
+  )
