@@ -219,7 +219,7 @@ class PlayersTest(unittest.TestCase):
     self.assertEqual(PlayerModel.get_distance_between_postcodes("N65HQ", 'EC1M4DT'), 6.764520984238515)
 
   def test_player_location(self):
-    self.assertEqual(PlayerModel.get_player_location("N65HQ"), {'location': "Haringey"})
+    self.assertEqual(PlayerModel.get_player_location("N65HQ"), "Haringey")
 
   def tearDown(self):
     """
