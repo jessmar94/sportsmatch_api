@@ -16,11 +16,13 @@ Technologies used
 - Pylint (to check code quality)
 - Pytest (unit testing)
 - BCrypt
-- CircleCI
+- TravisCI
 - SQLAlchemy
 - PostgreSQL
 
-The project has been deployed to [Heroku](https://sportsmatch-api.herokuapp.com/).   
+The project has been deployed to [Heroku](https://sportsmatch-api.herokuapp.com/).  
+
+The API has 27 passing tests with 82% test coverage.
 
 ## Trello
 https://trello.com/b/Twlp2CTz/sportsmatch

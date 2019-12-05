@@ -25,6 +25,7 @@ gunicorn = "*"
 marshmallow-sqlalchemy = "*"
 pgeocode = "*"
 requests = "*"
+pylint = "*"
 
 [requires]
 python_version = "3.7"

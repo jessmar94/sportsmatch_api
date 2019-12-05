@@ -1,15 +1,13 @@
 from marshmallow import fields, Schema
-from sqlalchemy.orm import load_only
 import datetime
-from . import db # import db instance from models/__init__.py
+from . import db  # import db instance from models/__init__.py
 from ..app import bcrypt
 from .GameModel import GameSchema
-from .ResultModel import ResultSchema
-from .MessageModel import MessageSchema
 import pgeocode
 import requests
 
-class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
+
+class PlayerModel(db.Model):  # PlayerModel class inherits from db.Model
   """
   Player Model
   """
@@ -141,7 +139,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     return PlayerModel.query.get(id)
 
   @staticmethod
-  def get_opponent_info(id):
+  def get_player_name(id):
     player_schema = PlayerSchema()
     player = PlayerModel.query.with_entities(PlayerModel.first_name).filter_by(id=id).first()
     return player_schema.dump(player)

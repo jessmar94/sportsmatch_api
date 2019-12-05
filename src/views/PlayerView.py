@@ -63,7 +63,7 @@ def get_a_player(player_id):
     player = PlayerModel.get_player_info(player_id)
     player_data = player_schema.dump(player)
     player_data['location'] = PlayerModel.get_player_location(player_data['postcode'])
-        
+
     if not player:
         return custom_response({'error': 'player not found'}, 400)
 
@@ -81,17 +81,17 @@ def get_current_user():
 
     return custom_response(player_data, 200)
 
-# @player_api.route('/', methods=['GET'])
-# @Auth.auth_required
-# def get_all_players():
-#     """
-#     View all filtered player's
-#     """
-#     user_id = Auth.current_user_id()
-#     players = PlayerModel.get_filtered_players(user_id, request.headers.get('ability'), request.headers.get('distance'))
-#     players_data = player_schema.dump(players, many=True)
-#
-#     return custom_response(players_data, 200)
+@player_api.route('/', methods=['GET'])
+@Auth.auth_required
+def get_all_players():
+    """
+    View all filtered player's
+    """
+    user_id = Auth.current_user_id()
+    players = PlayerModel.get_filtered_players(user_id, request.headers.get('ability'), request.headers.get('distance'))
+    players_data = player_schema.dump(players, many=True)
+
+    return custom_response(players_data, 200)
 
 @player_api.route('/my_profile', methods=['PATCH'])
 @Auth.auth_required
