@@ -40,12 +40,14 @@ def get_all():
     user_id = Auth.current_user_id()
     games = GameModel.get_all_users_games(user_id)
     data = game_schema.dump(games, many=True)
-    results = []
+    organiser = []
+    challenger = []
     for game in data:
       if game['organiser_id'] == user_id:
-        results.append({**game, **PlayerModel.get_opponent_info(game['opponent_id'])})
+        organiser.append({**game, **PlayerModel.get_opponent_info(game['opponent_id'])})
       elif game['opponent_id'] == user_id:
-        results.append({**game, **PlayerModel.get_opponent_info(game['organiser_id'])})
+        challenger.append({**game, **PlayerModel.get_opponent_info(game['organiser_id'])})
+    results ={'organiser_games': organiser, 'challenger_games': challenger}
     return custom_response(results, 200)
 
 @game_api.route('/opponent', methods=['GET'])
@@ -65,12 +67,6 @@ def get_all_opponent_games():
         formatted_result = result_schema.dump(result, many=True)
         formatted_game_info = game_schema.dump(game, many=True)
         organiser = PlayerModel.get_opponent_info(formatted_game_info[0]['organiser_id'])
-        # print(opponent)
-        # if not formatted_result:
-        #     continue
-        #
-        # if not formatted_game_info:
-        #     continue
 
         if len(formatted_result) == 0:
             final_results = {**formatted_game_info[0], **organiser}
@@ -104,11 +100,7 @@ def get_all_organiser_games():
         elif len(formatted_result) != 0:
             final_results = {**formatted_result[0], **formatted_game_info[0], **opponent}
             game_results.append(final_results)
-        # if not formatted_result:
-        #     continue
-        #
-        # if not formatted_game_info:
-        #     continue
+
     return custom_response(game_results, 200)
 
 @game_api.route('/', methods=['POST'])
