@@ -92,11 +92,11 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     for key, item in data.items():
         if key == 'password':
             setattr(self, 'password', self.__generate_hash(item))
-        elif key == 'ability':    
+        elif key == 'ability':
             self.rank_points = self.set_rank_points(item)
             setattr(self, 'rank_points', self.rank_points)
             setattr(self, 'ability', item)
-        else: 
+        else:
           setattr(self, key, item)
     self.modified_at = datetime.datetime.utcnow()
     db.session.commit()
@@ -198,6 +198,24 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   def get_distance_between_postcodes(org_code, opp_code):
      country = pgeocode.GeoDistance('gb')
      return country.query_postal_code(org_code[:-3], opp_code[:-3])
+
+  @staticmethod
+  def get_player_location(postcode):
+    req_data = requests.get(f'https://api.postcodes.io/postcodes/{postcode}').json()
+    data = {}
+    if req_data['status'] == 200:
+      # data['latitude'] = req_data['result']['latitude']
+      # data['longitude'] = req_data['result']['longitude']
+      data['location'] = req_data['result']['admin_district']
+      return(data)
+    return(data['error'])
+
+  @staticmethod
+  def get_player_postcode(id):
+      player_schema = PlayerSchema()
+      player = PlayerModel.query.with_entities(PlayerModel.postcode).filter_by(id=id).first()
+      return player_schema.dump(player)
+
 
   def __repr__(self): # returns a printable representation of the PlayerModel object (returning the id only)
     return '<id {}>'.format(self.id)
