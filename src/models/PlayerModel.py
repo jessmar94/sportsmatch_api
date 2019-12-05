@@ -200,17 +200,6 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
      return country.query_postal_code(org_code[:-3], opp_code[:-3])
 
   @staticmethod
-  def get_player_location(postcode):
-    req_data = requests.get(f'https://api.postcodes.io/postcodes/{postcode}').json()
-    data = {}
-    if req_data['status'] == 200:
-      # data['latitude'] = req_data['result']['latitude']
-      # data['longitude'] = req_data['result']['longitude']
-      data['location'] = req_data['result']['admin_district']
-      return(data)
-    return(data['error'])
-
-  @staticmethod
   def get_player_postcode(id):
       player_schema = PlayerSchema()
       player = PlayerModel.query.with_entities(PlayerModel.postcode).filter_by(id=id).first()

@@ -63,7 +63,7 @@ def get_a_player(player_id):
     """
     player = PlayerModel.get_player_info(player_id)
     player_data = player_schema.dump(player)
-    player_data_location = PlayerModel.get_player_location(player_data['postcode'])
+    player_data_location = {'location': PlayerModel.get_player_location(player_data['postcode'])}
 
     player_data_combined = {**player_data, **player_data_location}
 
