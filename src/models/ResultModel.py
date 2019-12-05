@@ -1,29 +1,32 @@
 import datetime
-from . import db # import db instance from models/__init__.py
+from . import db  # import db instance from models/__init__.py
 from marshmallow import fields, Schema
 
 
-class ResultModel(db.Model): # ResultModel class inherits from db.Model
+class ResultModel(db.Model):  # ResultModel class inherits from db.Model
     """
     Result Model
     """
 
-    # table name
-    __tablename__ = 'results' # name our table Results
+    __tablename__ = 'results'  # name our table Results
 
     id = db.Column(db.Integer, primary_key=True)
-    game_id = db.Column(db.Integer, db.ForeignKey('games.id'), nullable=False, unique=True)
+    game_id = db.Column(db.Integer, db.ForeignKey('games.id'),
+                        nullable=False, unique=True)
     winner_id = db.Column(db.Integer, db.ForeignKey('players.id'))
     loser_id = db.Column(db.Integer, db.ForeignKey('players.id'))
     result_confirmed = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime)
     modified_at = db.Column(db.DateTime)
-    winner = db.relationship("PlayerModel", primaryjoin = "ResultModel.winner_id == PlayerModel.id", backref="winner")
-    loser = db.relationship("PlayerModel", primaryjoin = "ResultModel.loser_id == PlayerModel.id", backref="loser")
+    winner = db.relationship("PlayerModel",
+                             primaryjoin="ResultModel.winner_id == PlayerModel.id",
+                             backref="winner")
+    loser = db.relationship("PlayerModel",
+                            primaryjoin="ResultModel.loser_id == PlayerModel.id",
+                            backref="loser")
     game = db.relationship("GameModel", back_populates="result")
 
-
-    def __init__(self, data): # class constructor used to set the class attributes
+    def __init__(self, data):  # class constructor used to set class attributes
         """
         Class constructor: set class attributes
         """
@@ -63,9 +66,9 @@ class ResultModel(db.Model): # ResultModel class inherits from db.Model
     def get_all_results(value):
         return ResultModel.query.filter_by(game_id=value)
 
-
     def __repr__(self):
         return '<id {}>'.format(self.id)
+
 
 class ResultSchema(Schema):
     """

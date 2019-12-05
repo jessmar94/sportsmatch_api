@@ -1,9 +1,10 @@
-from flask import request, json, Response, Blueprint, g, render_template
+from flask import request, json, Response, Blueprint
 from ..models.PlayerModel import PlayerModel, PlayerSchema
 from ..shared.Authentication import Auth
 
 player_api = Blueprint('player', __name__)
 player_schema = PlayerSchema()
+
 
 @player_api.route('/new', methods=['POST'])
 def create():
@@ -14,24 +15,28 @@ def create():
     data = player_schema.load(req_data)
     player_in_db = PlayerModel.get_player_by_email(data.get('email'))
     if player_in_db:
-        message = {'error': 'Player already exist, please supply another email address'}
+        message = {
+         'error': 'Player already exist, please supply another email address'}
         return custom_response(message, 400)
 
     player = PlayerModel(data)
     player.save()
     player_data = player_schema.dump(player)
     token = Auth.generate_token(player_data.get('id'))
-    return custom_response({'jwt_token': token, 'user_id': player_data.get('id')}, 201)
+    return custom_response({'jwt_token': token,
+                           'user_id': player_data.get('id')}, 201)
+
 
 @player_api.route('/<int:player_id>/image', methods=['GET'])
 @Auth.auth_required
 def get_image(player_id):
-  """
-  Get an image
-  """
-  player = PlayerModel.get_player_profile_image(player_id)
-  player_data = player_schema.dump(player)
-  return custom_response(player_data, 200)
+    """
+    Get an image
+    """
+    player = PlayerModel.get_player_profile_image(player_id)
+    player_data = player_schema.dump(player)
+    return custom_response(player_data, 200)
+
 
 @player_api.route('/login', methods=['POST'])
 def login():
@@ -41,7 +46,8 @@ def login():
     req_data = request.get_json()
     data = player_schema.load(req_data, partial=True)
     if not data.get('email') or not data.get('password'):
-        return custom_response({'error': 'you need email and password to sign in'}, 400)
+        message = 'you need email and password to sign in'
+        return custom_response({'error': message}, 400)
 
     player = PlayerModel.get_player_by_email(data.get('email'))
     if not player:
@@ -52,7 +58,9 @@ def login():
 
     player_data = player_schema.dump(player)
     token = Auth.generate_token(player_data.get('id'))
-    return custom_response({'jwt_token': token, 'user_id': player_data.get('id')}, 200)
+    return custom_response({'jwt_token': token,
+                            'user_id': player_data.get('id')}, 200)
+
 
 @player_api.route('/<int:player_id>', methods=['GET'])
 @Auth.auth_required
@@ -62,12 +70,14 @@ def get_a_player(player_id):
     """
     player = PlayerModel.get_player_info(player_id)
     player_data = player_schema.dump(player)
-    player_data['location'] = PlayerModel.get_player_location(player_data['postcode'])
+    player_data['location'] = PlayerModel\
+        .get_player_location(player_data['postcode'])
 
     if not player:
         return custom_response({'error': 'player not found'}, 400)
 
     return custom_response(player_data, 200)
+
 
 @player_api.route('/my_profile', methods=['GET'])
 @Auth.auth_required
@@ -81,6 +91,7 @@ def get_current_user():
 
     return custom_response(player_data, 200)
 
+
 @player_api.route('/', methods=['GET'])
 @Auth.auth_required
 def get_all_players():
@@ -88,10 +99,13 @@ def get_all_players():
     View all filtered player's
     """
     user_id = Auth.current_user_id()
-    players = PlayerModel.get_filtered_players(user_id, request.headers.get('ability'), request.headers.get('distance'))
+    players = PlayerModel.get_filtered_players(user_id,
+                                               request.headers.get('ability'),
+                                               request.headers.get('distance'))
     players_data = player_schema.dump(players, many=True)
 
     return custom_response(players_data, 200)
+
 
 @player_api.route('/my_profile', methods=['PATCH'])
 @Auth.auth_required

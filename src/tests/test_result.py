@@ -1,10 +1,9 @@
 import unittest
-import os
 import json
 from ..app import create_app, db
-from ..models.PlayerModel import PlayerModel, PlayerSchema
-from ..models.GameModel import GameModel, GameSchema
-from ..models.ResultModel import ResultModel, ResultSchema
+from ..models.PlayerModel import PlayerModel
+from ..models.GameModel import GameModel
+
 
 class ResultsTest(unittest.TestCase):
     """
@@ -70,13 +69,6 @@ class ResultsTest(unittest.TestCase):
             db.session.refresh(game1)
             game1_id = game1.id
 
-            game2 = GameModel(self.game_2)
-            db.session.add(game2)
-            db.session.commit()
-            db.session.refresh(game2)
-            game2_id = game2.id
-
-
         self.result_1 = {
           "game_id": game1_id,
           "winner_id": player1_id,
@@ -92,73 +84,110 @@ class ResultsTest(unittest.TestCase):
         }
 
     def test_return_of_games_with_results_for_organiser(self):
-          updated_game = {
-            "status": "confirmed"
-          }
-          res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
-          api_token = json.loads(res.data).get('jwt_token')
-          res = self.client().patch('api/v1/games/1/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(updated_game))
-          json_data = json.loads(res.data)
-          res = self.client().post("api/v1/results/1/new", headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_1))
-          json_data = json.loads(res.data)
-          res = self.client().get('api/v1/games/organiser', headers={'Content-Type': 'application/json', 'api-token': api_token})
-          json_data = json.loads(res.data)
-          print(json_data)
-          self.assertEqual(json_data[0].get('winner_id'), 1)
-          self.assertEqual(res.status_code, 200)
-
+        updated_game = {
+          "status": "confirmed"
+        }
+        res = self.client().post('api/v1/players/login',
+                                 headers={'Content-Type': 'application/json'},
+                                 data=json.dumps(self.player_1))
+        api_token = json.loads(res.data).get('jwt_token')
+        res = self.client().patch('api/v1/games/1/edit',
+                                  headers={'Content-Type': 'application/json',
+                                           'api-token': api_token},
+                                  data=json.dumps(updated_game))
+        json_data = json.loads(res.data)
+        res = self.client().post("api/v1/results/1/new",
+                                 headers={'Content-Type': 'application/json',
+                                          'api-token': api_token},
+                                 data=json.dumps(self.result_1))
+        json_data = json.loads(res.data)
+        res = self.client().get('api/v1/games/organiser',
+                                headers={'Content-Type': 'application/json',
+                                         'api-token': api_token})
+        json_data = json.loads(res.data)
+        self.assertEqual(json_data[0].get('winner_id'), 1)
+        self.assertEqual(res.status_code, 200)
 
     def test_organiser_creates_result(self):
-          updated_game = {
-            "status": "confirmed"
-          }
-          res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
-          api_token = json.loads(res.data).get('jwt_token')
-          res = self.client().patch('api/v1/games/1/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(updated_game))
-          json_data = json.loads(res.data)
-          res = self.client().post("api/v1/results/1/new", headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_1))
-          json_data = json.loads(res.data)
-          self.assertEqual(res.status_code, 201)
-          self.assertEqual(json_data.get('winner_id'), 1)
+        updated_game = {
+          "status": "confirmed"
+        }
+        res = self.client().post('api/v1/players/login',
+                                 headers={'Content-Type': 'application/json'},
+                                 data=json.dumps(self.player_1))
+        api_token = json.loads(res.data).get('jwt_token')
+        res = self.client().patch('api/v1/games/1/edit',
+                                  headers={'Content-Type': 'application/json',
+                                           'api-token': api_token},
+                                  data=json.dumps(updated_game))
+        json_data = json.loads(res.data)
+        res = self.client().post("api/v1/results/1/new",
+                                 headers={'Content-Type': 'application/json',
+                                          'api-token': api_token},
+                                 data=json.dumps(self.result_1))
+        json_data = json.loads(res.data)
+        self.assertEqual(res.status_code, 201)
+        self.assertEqual(json_data.get('winner_id'), 1)
 
     def test_cannot_create_result_if_opponent(self):
-          updated_game = {
-            "status": "confirmed"
-          }
-          res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_2))
-          api_token = json.loads(res.data).get('jwt_token')
-          res = self.client().patch('api/v1/games/1/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(updated_game))
-          json_data = json.loads(res.data)
-          res = self.client().post('api/v1/results/1/new', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_1))
-          self.assertEqual(res.status_code, 400)
+        updated_game = {
+          "status": "confirmed"
+        }
+        res = self.client().post('api/v1/players/login',
+                                 headers={'Content-Type': 'application/json'},
+                                 data=json.dumps(self.player_2))
+        api_token = json.loads(res.data).get('jwt_token')
+        res = self.client().patch('api/v1/games/1/edit',
+                                  headers={'Content-Type': 'application/json',
+                                           'api-token': api_token},
+                                  data=json.dumps(updated_game))
+        res = self.client().post('api/v1/results/1/new',
+                                 headers={'Content-Type': 'application/json',
+                                          'api-token': api_token},
+                                 data=json.dumps(self.result_1))
+        self.assertEqual(res.status_code, 400)
 
     def test_cannot_create_result_pending_game(self):
-          res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
-          api_token = json.loads(res.data).get('jwt_token')
-          res = self.client().post('api/v1/results/1/new', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_1))
-          self.assertEqual(res.status_code, 400)
+        res = self.client().post('api/v1/players/login',
+                                 headers={'Content-Type': 'application/json'},
+                                 data=json.dumps(self.player_1))
+        api_token = json.loads(res.data).get('jwt_token')
+        res = self.client().post('api/v1/results/1/new',
+                                 headers={'Content-Type': 'application/json',
+                                          'api-token': api_token},
+                                 data=json.dumps(self.result_1))
+        self.assertEqual(res.status_code, 400)
 
     def test_cannot_create_two_results(self):
-          updated_game = {
-            "status": "confirmed"
-          }
-          res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
-          api_token = json.loads(res.data).get('jwt_token')
-          res = self.client().patch('api/v1/games/1/edit', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(updated_game))
-          json_data = json.loads(res.data)
-          res = self.client().post("api/v1/results/1/new", headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_1))
-          json_data = json.loads(res.data)
-          res = self.client().post("api/v1/results/1/new", headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.result_2))
-          json_data = json.loads(res.data)
-          self.assertEqual(res.status_code, 400)
+        updated_game = {
+          "status": "confirmed"
+        }
+        res = self.client().post('api/v1/players/login',
+                                 headers={'Content-Type': 'application/json'},
+                                 data=json.dumps(self.player_1))
+        api_token = json.loads(res.data).get('jwt_token')
+        res = self.client().patch('api/v1/games/1/edit',
+                                  headers={'Content-Type': 'application/json',
+                                           'api-token': api_token},
+                                  data=json.dumps(updated_game))
+        res = self.client().post("api/v1/results/1/new",
+                                 headers={'Content-Type': 'application/json',
+                                          'api-token': api_token},
+                                 data=json.dumps(self.result_1))
+        res = self.client().post("api/v1/results/1/new",
+                                 headers={'Content-Type': 'application/json',
+                                          'api-token': api_token},
+                                 data=json.dumps(self.result_2))
+        self.assertEqual(res.status_code, 400)
 
     def tearDown(self):
         """
         Runs at the end of the test case; drops the db
         """
         with self.app.app_context():
-          db.session.remove()
-          db.drop_all()
+            db.session.remove()
+            db.drop_all()
+
 
 if __name__ == "__main__":
     unittest.main()
