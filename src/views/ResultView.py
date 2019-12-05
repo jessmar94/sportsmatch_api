@@ -14,11 +14,13 @@ game_schema = GameSchema()
 #     current_user_id = Auth.current_user_id()
 #
 #     result = ResultModel.get_one_result(result_id)
-#     if result.winner_id == current_user_id or result.loser_id == current_user_id:
+#     if result.winner_id == current_user_id\
+#       or result.loser_id == current_user_id:
 #             data = result_schema.dump(result)
 #             return custom_response(data, 200)
 #
-#     message = {'error': 'You must have played in this game to view the result.'}
+#     message = {'error':
+#       'You must have played in this game to view the result.'}
 #     return custom_response(message, 404)
 
 
