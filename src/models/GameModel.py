@@ -1,8 +1,7 @@
 import datetime
-from . import db  # import db instance from models/__init__.py
-from marshmallow import fields, Schema
 from sqlalchemy import or_
-
+from marshmallow import fields, Schema
+from . import db  # import db instance from models/__init__.py
 
 # GameModel class inherits from db.Model
 class GameModel(db.Model):
@@ -45,6 +44,7 @@ class GameModel(db.Model):
         self.modified_at = datetime.datetime.utcnow()
 
     def save(self):
+        """Save db entry"""
         db.session.add(self)
         db.session.commit()
 

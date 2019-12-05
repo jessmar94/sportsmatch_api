@@ -17,8 +17,7 @@ def custom_response(res, status_code):
     return Response(
       mimetype="application/json",
       response=json.dumps(res),
-      status=status_code
-    )
+      status=status_code)
 
 
 @game_api.route('/<int:game_id>', methods=['GET'])
@@ -47,13 +46,9 @@ def get_all():
     challenger = []
     for game in data:
         if game['organiser_id'] == user_id:
-            organiser.append({**game,
-                             **PlayerModel.get_player_name(
-                              game['opponent_id'])})
+            organiser.append({**game,**PlayerModel.get_player_name(game['opponent_id'])})
         elif game['opponent_id'] == user_id:
-            challenger.append({**game,
-                              **PlayerModel.get_player_name(
-                               game['organiser_id'])})
+            challenger.append({**game,**PlayerModel.get_player_name(game['organiser_id'])})
     results = {'organiser_games': organiser, 'challenger_games': challenger}
     return custom_response(results, 200)
 
