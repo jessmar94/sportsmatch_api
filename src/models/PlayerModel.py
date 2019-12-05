@@ -54,7 +54,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
     self.postcode = data.get('postcode')
 
   def set_rank_points(self, ability):
-      return self.RANKS[ability]/2
+      return self.RANKS[ability]-50
 
   def update_winner_rank_points(self):
       new_points = getattr(self, 'rank_points') + 5
@@ -91,16 +91,19 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   def update(self, data):
     for key, item in data.items():
         if key == 'password':
-            self.password = self.__generate_hash(data.get('password'))
-        if key == 'ability':
-            self.rank_points = self.set_rank_points(data.get('ability'))
-        setattr(self, key, item)
+            setattr(self, 'password', self.__generate_hash(item))
+        elif key == 'ability':
+            self.rank_points = self.set_rank_points(item)
+            setattr(self, 'rank_points', self.rank_points)
+            setattr(self, 'ability', item)
+        else:
+          setattr(self, key, item)
     self.modified_at = datetime.datetime.utcnow()
     db.session.commit()
 
-  def delete(self):
-    db.session.delete(self)
-    db.session.commit()
+  # def delete(self):
+  #   db.session.delete(self)
+  #   db.session.commit()
 
   def __generate_hash(self, password):
     return bcrypt.generate_password_hash(password, rounds=10).decode("utf-8")
@@ -108,9 +111,9 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
   def check_hash(self, password):
     return bcrypt.check_password_hash(self.password, password)
 
-  @staticmethod
-  def get_all_players():
-    return PlayerModel.query.all()
+  # @staticmethod
+  # def get_all_players():
+  #   return PlayerModel.query.all()
 
   @staticmethod
   def get_player_by_email(value):
@@ -161,6 +164,7 @@ class PlayerModel(db.Model): # PlayerModel class inherits from db.Model
       return(req_data['result']['admin_district'])
     return(req_data['error'])
 
+# Currently not in use anywhere
   @staticmethod
   def get_players_by_ability(id, ability, sport):
     return PlayerModel.query.with_entities(
