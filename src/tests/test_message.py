@@ -1,9 +1,8 @@
 import unittest
 import json
 from ..app import create_app, db
-from ..models.MessageModel import MessageModel
-from ..models.PlayerModel import PlayerModel, PlayerSchema
-from ..models.GameModel import GameModel, GameSchema
+from ..models.PlayerModel import PlayerModel
+from ..models.GameModel import GameModel
 
 
 class MessageTest(unittest.TestCase):
@@ -38,6 +37,17 @@ class MessageTest(unittest.TestCase):
           "postcode": "N65SQ",
           "rank_points": 50
         }
+        self.player_3 = {
+          "first_name": "Jess",
+          "last_name": "M",
+          "email": "jess@test.com",
+          "password": "password",
+          "gender": "Female",
+          "dob": "1990-01-01",
+          "ability": "Beginner",
+          "postcode": "N65SQ",
+          "rank_points": 50
+        }
         self.game_1 = {
           "organiser_id": 1,
           "opponent_id": 2,
@@ -45,13 +55,6 @@ class MessageTest(unittest.TestCase):
           "game_date": "2019-11-01",
           "game_time": "15:00:00"
         }
-        # self.game_2 = {
-        #   "organiser_id": 1,
-        #   "opponent_id": 2,
-        #   "status": "pending",
-        #   "game_date": "2020-10-20",
-        #   "game_time": "19:00:00"
-        # }
 
         with self.app.app_context():
             db.create_all()
@@ -67,6 +70,11 @@ class MessageTest(unittest.TestCase):
             db.session.refresh(player2)
             player2_id = player2.id
 
+            player3 = PlayerModel(self.player_3)
+            db.session.add(player3)
+            db.session.commit()
+            db.session.refresh(player3)
+
             game1 = GameModel(self.game_1)
             db.session.add(game1)
             db.session.commit()
@@ -74,14 +82,6 @@ class MessageTest(unittest.TestCase):
             self.game1_id = game1.id
             game1_organiser = game1.organiser_id
             game1_opponent = game1.opponent_id
-
-            # game2 = GameModel(self.game_2)
-            # db.session.add(game2)
-            # db.session.commit()
-            # db.session.refresh(game2)
-            # game2_id = game2.id
-            # game2_organiser = game2.organiser_id
-            # game2_opponent = game2.opponent_id
 
         self.message_1 = {
           "game_id": self.game1_id,
@@ -95,39 +95,41 @@ class MessageTest(unittest.TestCase):
           "game_id": self.game1_id,
           "organiser_id": game1_organiser,
           "opponent_id": game1_opponent,
-          "sender_id": 3,
-          "content": "Yeah man what time?"
+          "sender_id": game1_opponent,
+          "content": "Yeah cool what time?"
         }
 
-    def test_message(self):
+    def test_message_returns(self):
         res = self.client().post('api/v1/players/login',
                                  headers={'Content-Type': 'application/json'},
                                  data=json.dumps(self.player_1))
-        print("RES",res)
         api_token = json.loads(res.data).get('jwt_token')
         res = self.client().post('api/v1/messages/',
                                  headers={'Content-Type': 'application/json',
                                           'api-token': api_token},
                                  data=json.dumps(self.message_1))
         json_data = json.loads(res.data)
-        self.assertEqual(json_data.get('content'), "Hey want to play a game of ball?")
+        message = "Hey want to play a game of ball?"
+        self.assertEqual(json_data.get('content'), message)
         self.assertEqual(res.status_code, 201)
 
-    def test_return_cannot_message_player_outside_game(self):
-        response = self.client().post('api/v1/players/login',
+    def test_see_all_messages(self):
+        res = self.client().post('api/v1/players/login',
                                  headers={'Content-Type': 'application/json'},
                                  data=json.dumps(self.player_1))
-        api_token = json.loads(response.data).get('jwt_token')
-        response_1 = self.client().post('api/v1/messages/',
+        api_token = json.loads(res.data).get('jwt_token')
+        res = self.client().post('api/v1/messages/',
+                                 headers={'Content-Type': 'application/json',
+                                          'api-token': api_token},
+                                 data=json.dumps(self.message_1))
+        res = self.client().post('api/v1/messages/',
                                  headers={'Content-Type': 'application/json',
                                           'api-token': api_token},
                                  data=json.dumps(self.message_2))
-        json_data = json.loads(response.data)
-        self.assertEqual()
-        self.assertEqual(response.status_code, 201)
-        print(response)
-        print(response_1)
-
+        res = self.client().get('api/v1/messages/1',
+                                headers={'Content-Type': 'application/json',
+                                         'api-token': api_token})
+        self.assertEqual(res.status_code, 200)
 
     def tearDown(self):
         """

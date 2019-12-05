@@ -1,6 +1,7 @@
 import datetime
-from . import db # import db instance from models/__init__.py
+from . import db  # import db instance from models/__init__.py
 from marshmallow import fields, Schema
+
 
 class MessageModel(db.Model):
     __tablename__ = 'messages'
@@ -47,6 +48,7 @@ class MessageModel(db.Model):
 
     def __repr__(self):
       return '<id {}>'.format(self.id)
+
 
 class MessageSchema(Schema):
   """
