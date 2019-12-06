@@ -20,6 +20,8 @@ Technologies used
 - SQLAlchemy
 - PostgreSQL
 
+We have 31 passing tests with an 89% test coverage. 
+
 The project has been deployed to [Heroku](https://sportsmatch-api.herokuapp.com/).   
 
 ## Trello
