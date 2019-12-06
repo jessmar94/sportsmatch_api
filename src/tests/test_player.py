@@ -135,6 +135,14 @@ class PlayersTest(unittest.TestCase):
     self.assertEqual(json_data.get('email'), 'bob@test.com')
     self.assertEqual(json_data.get('first_name'), 'Bob')
 
+  def test_get_all_filtered_players(self):
+    res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player))
+    res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player2))
+    api_token = json.loads(res.data).get('jwt_token')
+    res = self.client().get('api/v1/players/', headers={'Content-Type': 'application/json', 'api-token': api_token})
+    json_data = json.loads(res.data)
+    self.assertEqual(res.status_code, 200)
+
   def test_player_gets_points_if_wins(self):
     updated_game = {
       "status": "confirmed"
