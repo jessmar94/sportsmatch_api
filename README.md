@@ -1,6 +1,6 @@
 # SportsMatch Backend
 ## Introduction
-SportsMatch encourages people to be more active by enabling them to find fellow racket sports fans to play a game with. This application serves as the backend for our final project at Makers Academy.
+SportsMatch encourages people to be more active by enabling them to find fellow racket sports fans to play a game with. This application serves as the backend for our final project at Makers Academy. You can find our frontend app [here](https://github.com/smasonmalik/sportsmatch_react).
 
 The team consisted of:
 - [Sid Mason-Malik](https://github.com/smasonmalik)
