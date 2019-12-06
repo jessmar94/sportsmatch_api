@@ -131,6 +131,19 @@ class MessageTest(unittest.TestCase):
                                          'api-token': api_token})
         self.assertEqual(res.status_code, 200)
 
+    def test_see_no_messages(self):
+        res = self.client().post('api/v1/players/login',
+                                 headers={'Content-Type': 'application/json'},
+                                 data=json.dumps(self.player_1))
+        api_token = json.loads(res.data).get('jwt_token')
+        res = self.client().get('api/v1/messages/1',
+                                headers={'Content-Type': 'application/json',
+                                         'api-token': api_token})
+        json_data = json.loads(res.data)
+        message = 'No previous messages, start your conversation now'
+        self.assertEqual(json_data.get('message'), message)
+        self.assertEqual(res.status_code, 200)
+
     def tearDown(self):
         """
         Runs at the end of the test case; drops the db
