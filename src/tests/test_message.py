@@ -107,6 +107,7 @@ class MessageTest(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(json_data[-1].get('sender'), 'Dom')
         self.assertEqual(json_data[-1].get('receiver'), 'Pam')
+        self.assertEqual(json_data[-1].get('player_postcode'), 'N169NP')
 
     def tearDown(self):
        """
