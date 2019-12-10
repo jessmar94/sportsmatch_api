@@ -7,9 +7,6 @@ message_api = Blueprint('message_api', __name__)
 message_schema = MessageSchema()
 
 def custom_response(res, status_code):
-  """
-  Custom Response Function
-  """
   return Response(
     mimetype="application/json",
     response=json.dumps(res),
@@ -19,9 +16,6 @@ def custom_response(res, status_code):
 @message_api.route('/<int:other_user_id>', methods=['GET'])
 @Auth.auth_required
 def get_all_messages(other_user_id):
-    """
-    Get all messages for two users
-    """
     message = MessageModel.get_all_messages_with_user(Auth.current_user_id(), other_user_id).first()
     if not message:
         return custom_response({'message': 'No previous messages, start your conversation now', "player_postcode": PlayerModel.get_player_postcode(Auth.current_user_id())}, 200)
@@ -38,9 +32,6 @@ def get_all_messages(other_user_id):
 @message_api.route('/', methods=['POST'])
 @Auth.auth_required
 def create():
-    """
-    Create Message
-    """
     req_data = request.get_json()
     print(req_data)
     data = message_schema.load(req_data)

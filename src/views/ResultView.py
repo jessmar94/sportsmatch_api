@@ -24,9 +24,6 @@ game_schema = GameSchema()
 @result_api.route('/<int:game_id>/new', methods=['POST'])
 @Auth.auth_required
 def create(game_id):
-      """
-      Create a Result
-      """
       current_user_id = Auth.current_user_id()
       req_data = request.get_json()
       winner = PlayerModel.get_one_player(req_data['winner_id'])
@@ -50,9 +47,6 @@ def create(game_id):
       return custom_response(message, 400)
 
 def custom_response(res, status_code):
-    """
-    Custom Response Function
-    """
     return Response(
         mimetype="application/json",
         response=json.dumps(res),

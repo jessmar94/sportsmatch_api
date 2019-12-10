@@ -10,9 +10,6 @@ player_schema = PlayerSchema()
 result_schema = ResultSchema()
 
 def custom_response(res, status_code):
-  """
-  Custom Response Function
-  """
   return Response(
     mimetype="application/json",
     response=json.dumps(res),
@@ -22,9 +19,6 @@ def custom_response(res, status_code):
 @game_api.route('/<int:game_id>', methods=['GET'])
 @Auth.auth_required
 def get_one(game_id):
-  """
-  Get A Game
-  """
   game = GameModel.get_one_game(game_id)
   if not game:
     return custom_response({'error': 'game not found'}, 404)
@@ -34,9 +28,6 @@ def get_one(game_id):
 @game_api.route('/', methods=['GET'])
 @Auth.auth_required
 def get_all():
-    """
-    Get All Games related to a user
-    """
     user_id = Auth.current_user_id()
     games = GameModel.get_all_users_games(user_id)
     data = game_schema.dump(games, many=True)
@@ -53,9 +44,6 @@ def get_all():
 @game_api.route('/opponent', methods=['GET'])
 @Auth.auth_required
 def get_all_opponent_games():
-    """
-    Get Past Confirmed Games related to an opponent
-    """
     current_user_id = Auth.current_user_id()
     guest = GameModel.get_game_by_opp_id(current_user_id)
     games = [*guest]
@@ -67,7 +55,6 @@ def get_all_opponent_games():
         formatted_result = result_schema.dump(result, many=True)
         formatted_game_info = game_schema.dump(game, many=True)
         organiser = PlayerModel.get_opponent_info(formatted_game_info[0]['organiser_id'])
-
         if len(formatted_result) == 0:
             final_results = {**formatted_game_info[0], **organiser}
             game_results.append(final_results)
@@ -79,9 +66,6 @@ def get_all_opponent_games():
 @game_api.route('/organiser', methods=['GET'])
 @Auth.auth_required
 def get_all_organiser_games():
-    """
-    Get Past Confirmed Games related to an opponent
-    """
     current_user_id = Auth.current_user_id()
     host = GameModel.get_game_by_org_id(current_user_id)
     games = [*host]
@@ -93,22 +77,17 @@ def get_all_organiser_games():
         formatted_result = result_schema.dump(result, many=True)
         formatted_game_info = game_schema.dump(game, many=True)
         opponent = PlayerModel.get_opponent_info(formatted_game_info[0]['opponent_id'])
-
         if len(formatted_result) == 0:
             final_results = {**formatted_game_info[0], **opponent}
             game_results.append(final_results)
         elif len(formatted_result) != 0:
             final_results = {**formatted_result[0], **formatted_game_info[0], **opponent}
             game_results.append(final_results)
-
     return custom_response(game_results, 200)
 
 @game_api.route('/', methods=['POST'])
 @Auth.auth_required
 def create():
-  """
-  Create Game Function
-  """
   req_data = request.get_json()
   data = game_schema.load(req_data)
   game = GameModel(data)
@@ -119,9 +98,6 @@ def create():
 @game_api.route('/<int:game_id>/edit', methods=['PATCH'])
 @Auth.auth_required
 def edit_game(game_id):
-    """
-    Edit a Game
-    """
     user_id = Auth.current_user_id()
     req_data = request.get_json()
     game = GameModel.get_one_game(game_id)
