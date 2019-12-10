@@ -78,19 +78,24 @@ class MessageTest(unittest.TestCase):
         res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
         api_token = json.loads(res.data).get('jwt_token')
         res = self.client().post('api/v1/messages/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.message_1))
-
         res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_2))
         api_token = json.loads(res.data).get('jwt_token')
         res = self.client().post('api/v1/messages/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.message_2))
-
         res = self.client().get('api/v1/messages/2', headers={'Content-Type': 'application/json', 'api-token': api_token})
         json_data = json.loads(res.data)
-        # sender_id = json_data[0].get('sender_id')
-        # receiver_id = json_data[0].get('receiver_id')
         self.assertEqual(json_data[0].get('sender_id'), 2)
         self.assertEqual(json_data[0].get('receiver_id'), 1)
         self.assertEqual(len(json_data), 2)
 
+    def test_cannot_send_message_without_content(self):
+        res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+        api_token = json.loads(res.data).get('jwt_token')
+        res = self.client().post('api/v1/messages/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data={'sender_id': 1, 'receiver_id': 2, 'content': ''})
+        self.assertEqual(res.status_code, 400)
+
+    def test_unloggedin_player_cannot_send_message(self):
+        res = self.client().post('api/v1/messages/', headers={'Content-Type': 'application/json'}, data=json.dumps(self.message_1))
+        self.assertEqual(res.status_code, 400)
 
     def tearDown(self):
        """

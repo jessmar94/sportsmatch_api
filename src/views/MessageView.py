@@ -29,8 +29,8 @@ def get_all_messages(other_user_id):
     data = message_schema.dump(messages, many=True)
     player = PlayerModel.get_player_postcode(Auth.current_user_id())
     # data.append({
-    #     'organiser': message.game.organiser.first_name,
-    #     'opponent': message.game.opponent.first_name,
+    #     'organiser': message.sender.first_name,
+    #     'opponent': message.receiver.first_name,
     #     'organiser_id': message.game.organiser_id,
     #     'opponent_id': message.game.opponent_id,
     #     "player_postcode": player['postcode']
@@ -47,6 +47,10 @@ def create():
     req_data = request.get_json()
     print(req_data)
     data = message_schema.load(req_data)
+    content = data.get('content')
+    if not content:
+        message = {'error': 'Message cannot be empty'}
+        return custom_response(message, 400)
     message = MessageModel(data)
     message.save()
     data = message_schema.dump(message)
