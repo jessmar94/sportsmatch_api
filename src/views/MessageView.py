@@ -28,14 +28,11 @@ def get_all_messages(other_user_id):
     messages = MessageModel.get_all_messages_with_user(Auth.current_user_id(), other_user_id)
     data = message_schema.dump(messages, many=True)
     player = PlayerModel.get_player_postcode(Auth.current_user_id())
-    # data.append({
-    #     'organiser': message.sender.first_name,
-    #     'opponent': message.receiver.first_name,
-    #     'organiser_id': message.game.organiser_id,
-    #     'opponent_id': message.game.opponent_id,
-    #     "player_postcode": player['postcode']
-    # })
-    print(data)
+    data.append({
+        'sender': message.sender.first_name,
+        'receiver': message.receiver.first_name,
+        "player_postcode": player['postcode']
+    })
     return custom_response(data, 200)
 
 @message_api.route('/', methods=['POST'])

@@ -44,9 +44,6 @@ class PlayersTest(unittest.TestCase):
         db.session.refresh(player2)
         player2_id = player2.id
 
-    # with self.app.app_context():
-    #   db.create_all()
-
   def test_player_created(self):
     """ test player is created with valid credentials """
     res = self.client().post('api/v1/players/new', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player))
