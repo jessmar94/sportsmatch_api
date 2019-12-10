@@ -1,6 +1,7 @@
 import datetime
 from . import db # import db instance from models/__init__.py
 from marshmallow import fields, Schema
+from sqlalchemy import or_
 
 class MessageModel(db.Model):
     __tablename__ = 'messages'
@@ -44,8 +45,10 @@ class MessageModel(db.Model):
       db.session.commit()
 
     @staticmethod
-    def get_all_game_messages(game_id):
-      return MessageModel.query.filter_by(game_id=game_id)
+    def get_all_messages_with_user(current_user_id, other_user_id):
+      return MessageModel.query.filter(or_(MessageModel.sender_id==current_user_id, MessageModel.receiver_id==current_user_id)).\
+                                filter(or_(MessageModel.sender_id==other_user_id, MessageModel.receiver_id==other_user_id)).\
+                                order_by(MessageModel.created_at.desc())
 
     def __repr__(self):
       return '<id {}>'.format(self.id)

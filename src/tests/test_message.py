@@ -59,6 +59,12 @@ class MessageTest(unittest.TestCase):
           "content": "this is a message"
         }
 
+        self.message_2 = {
+          "sender_id": player_2_id,
+          "receiver_id": player_1_id,
+          "content": "this is a message"
+        }
+
     def test_message_created(self):
         res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
         api_token = json.loads(res.data).get('jwt_token')
@@ -67,3 +73,32 @@ class MessageTest(unittest.TestCase):
         self.assertEqual(json_data.get('sender_id'), 1)
         self.assertEqual(json_data.get('receiver_id'), 2)
         self.assertEqual(json_data.get('content'), "this is a message")
+
+    def test_get_all_messages_for_players(self):
+        res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_1))
+        api_token = json.loads(res.data).get('jwt_token')
+        res = self.client().post('api/v1/messages/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.message_1))
+
+        res = self.client().post('api/v1/players/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.player_2))
+        api_token = json.loads(res.data).get('jwt_token')
+        res = self.client().post('api/v1/messages/', headers={'Content-Type': 'application/json', 'api-token': api_token}, data=json.dumps(self.message_2))
+
+        res = self.client().get('api/v1/messages/2', headers={'Content-Type': 'application/json', 'api-token': api_token})
+        json_data = json.loads(res.data)
+        # sender_id = json_data[0].get('sender_id')
+        # receiver_id = json_data[0].get('receiver_id')
+        self.assertEqual(json_data[0].get('sender_id'), 2)
+        self.assertEqual(json_data[0].get('receiver_id'), 1)
+        self.assertEqual(len(json_data), 2)
+
+
+    def tearDown(self):
+       """
+       Runs at the end of the test case; drops the db
+       """
+       with self.app.app_context():
+         db.session.remove()
+         db.drop_all()
+
+if __name__ == "__main__":
+    unittest.main()

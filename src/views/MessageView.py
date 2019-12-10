@@ -16,25 +16,25 @@ def custom_response(res, status_code):
     status=status_code
   )
 
-@message_api.route('/<int:game_id>', methods=['GET'])
+@message_api.route('/<int:other_user_id>', methods=['GET'])
 @Auth.auth_required
-def get_all_messages(game_id):
+def get_all_messages(other_user_id):
     """
-    Get all messages for game
+    Get all messages for two users
     """
-    message = MessageModel.get_all_game_messages(game_id).first()
+    message = MessageModel.get_all_messages_with_user(Auth.current_user_id(), other_user_id).first()
     if not message:
         return custom_response({'message': 'No previous messages, start your conversation now', "player_postcode": PlayerModel.get_player_postcode(Auth.current_user_id())}, 200)
-    messages = MessageModel.get_all_game_messages(game_id)
+    messages = MessageModel.get_all_messages_with_user(Auth.current_user_id(), other_user_id)
     data = message_schema.dump(messages, many=True)
     player = PlayerModel.get_player_postcode(Auth.current_user_id())
-    data.append({
-        'organiser': message.game.organiser.first_name,
-        'opponent': message.game.opponent.first_name,
-        'organiser_id': message.game.organiser_id,
-        'opponent_id': message.game.opponent_id,
-        "player_postcode": player['postcode']
-    })
+    # data.append({
+    #     'organiser': message.game.organiser.first_name,
+    #     'opponent': message.game.opponent.first_name,
+    #     'organiser_id': message.game.organiser_id,
+    #     'opponent_id': message.game.opponent_id,
+    #     "player_postcode": player['postcode']
+    # })
     print(data)
     return custom_response(data, 200)
 
