@@ -59,7 +59,6 @@ def get_all_opponent_games():
     current_user_id = Auth.current_user_id()
     guest = GameModel.get_game_by_opp_id(current_user_id)
     games = [*guest]
-    results = []
     game_results = []
     for game in games:
         result = ResultModel.get_all_results(game.id)
@@ -85,7 +84,6 @@ def get_all_organiser_games():
     current_user_id = Auth.current_user_id()
     host = GameModel.get_game_by_org_id(current_user_id)
     games = [*host]
-    results = []
     game_results = []
     for game in games:
         result = ResultModel.get_all_results(game.id)
