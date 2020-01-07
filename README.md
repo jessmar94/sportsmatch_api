@@ -22,7 +22,7 @@ Technologies used
 
 We have 31 passing tests with an 89% test coverage. 
 
-The project has been deployed to [Heroku](https://sportsmatch-api.herokuapp.com/).   
+The project has been deployed to [Heroku](http://sportsmatch-app.herokuapp.com/).   
 
 ## Trello
 https://trello.com/b/Twlp2CTz/sportsmatch
