@@ -26,7 +26,11 @@ The project has been deployed to [Heroku](http://sportsmatch-app.herokuapp.com/)
 
 ![Homepage](Home.png)
 
+![Players](Players.png)
 
+![Player](Player.png)
+
+![Game](Game.png)
 
 ## Trello
 https://trello.com/b/Twlp2CTz/sportsmatch
