@@ -16,7 +16,7 @@ Technologies used
 - Pylint (to check code quality)
 - Pytest (unit testing)
 - BCrypt
-- CircleCI
+- TravisCI
 - SQLAlchemy
 - PostgreSQL
 
